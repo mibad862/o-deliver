@@ -15,6 +15,7 @@ class NetworkConstantsUtil {
   static String getAllData = 'driver/get_all_data';
   static String updateDriverStatus = 'driver/update_driver_duty_status';
   static String updateDriverLocation = 'driver/update_driver_location';
+  static String confirmOrder = 'driver/instant_delivery_notification_response';
   static String vehicles = 'driver/vehicles';
   static String logout = 'users/logout';
 

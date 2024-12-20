@@ -6,7 +6,11 @@ import '../shared_pref_helper.dart';
 import '../util/snackbar_util.dart';
 
 class DeliveryScreenProvider extends ChangeNotifier {
-  bool isSwitched = false;
+  DeliveryScreenProvider(){
+    _initializeDriverStatus();
+  }
+
+  bool? isSwitched = false;
   bool _isLoading = false;
 
   final _apiService = ApiService();
@@ -14,6 +18,11 @@ class DeliveryScreenProvider extends ChangeNotifier {
   void changeDriverStatus(bool value){
     isSwitched = value;
     notifyListeners();
+  }
+
+  Future<void> _initializeDriverStatus() async {
+    isSwitched = await SharedPrefHelper.getBool("user-online") ?? false;
+    notifyListeners(); // Notify UI after fetching the value
   }
 
 
@@ -32,7 +41,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
     }
 
     final Map<String, dynamic> params = {
-      "on_duty": isSwitched ? 1 : 0,
+      "on_duty": isSwitched! ? 1 : 0,
     };
 
     try {

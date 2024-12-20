@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/providers/deliveryScreen_provider.dart';
+import 'package:o_deliver/shared_pref_helper.dart';
 import 'package:provider/provider.dart';
 
 import '../../background_service.dart';
@@ -62,24 +63,37 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               );*/
 
               Switch(
-                value: provider.isSwitched,
+                value: provider.isSwitched ?? false,
                 onChanged: (value) async{
-                  // await initializeService();
-                  final service = FlutterBackgroundService();
-                  bool isRunning = await service.isRunning();
-                  if (isRunning) {
-                    service.invoke('stopService');
-                    setState(() {
-                      text = 'Start Service';
-                    });
-                  } else {
-                    service.startService();
-                    setState(() {
-                      text = 'Stop Service';
-                    });
-                  }
-                  // print("Widget Rebuild");
+
                   provider.changeDriverStatus(value);
+                  await SharedPrefHelper.saveBool("user-online", value);
+
+                  // if (value) {
+                  //   // Start the background service when the switch is turned on
+                  //   await initializeService();
+                  // } else {
+                  //   // Stop the background service when the switch is turned off
+                  //   final service = FlutterBackgroundService();
+                  //   service.invoke('stopService');
+                  // }
+
+
+                  // await initializeService();
+                  // final service = FlutterBackgroundService();
+                  // bool isRunning = await service.isRunning();
+                  // if (isRunning) {
+                  //   service.invoke('stopService');
+                  //   setState(() {
+                  //     text = 'Start Service';
+                  //   });
+                  // } else {
+                  //   service.startService();
+                  //   setState(() {
+                  //     text = 'Stop Service';
+                  //   });
+                  // }
+                  // print("Widget Rebuild");
                   provider.updateDriverStatus(context);
                 },
               );

@@ -3,15 +3,20 @@ import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'api_handler/api_wrapper.dart';
+import 'api_handler/network_constant.dart';
+import 'shared_pref_helper.dart';
 
 class NotificationServices {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final _apiService = ApiService();
   final _flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
+
 
   void initLocalNotifications(
       BuildContext context, RemoteMessage message) async {
     var androidInitializationSettings =
-        const AndroidInitializationSettings("@mipmap/ic_launcher");
+    const AndroidInitializationSettings("@mipmap/ic_launcher");
     var iosInitializationSettings = const DarwinInitializationSettings();
 
     var initializationSettings = InitializationSettings(
@@ -19,10 +24,19 @@ class NotificationServices {
       iOS: iosInitializationSettings,
     );
 
-    await _flutterLocalNotificationPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (payload) {
-      // handleMessage(context, message);
-    });
+    await _flutterLocalNotificationPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        handleNotificationAction(response, message);
+      },
+      // onDidReceiveNotificationResponse: (payload) {
+      //   if (payload.actionId == 'accept') {
+      //     handleNotificationAction('accepted', message.data["orderId"]);
+      //   } else if (payload.actionId == 'decline') {
+      //     handleNotificationAction('declined', message.data["orderId"]);
+      //   }
+      // },
+    );
   }
 
   // void firebaseInit(BuildContext context){
@@ -59,14 +73,13 @@ class NotificationServices {
       print("HELLO");
       // print(message.data);
       // print(message.data['distance']);
-      print(message.data['body']);
-      print(message.data['title']);
-      print(message.data['orderId']);
+      // print(message.data['body']);
+      print("TITLE ${message.data['title']}");
+      print("TITLE ${message.data['title']}");
+      // print(message.data['orderId']);
 
-      // print(message.notification!.title);
+      print(message.notification!.title);
       // print(message.notification!.body);
-
-
 
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
@@ -85,15 +98,15 @@ class NotificationServices {
     );
 
     AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
+    AndroidNotificationDetails(
       actions: [
         const AndroidNotificationAction(
-          'accept', // Action ID
+          'accepted', // Action ID
           'Accept', // Button Label
           showsUserInterface: true, // Open app on button press
         ),
         const AndroidNotificationAction(
-          'decline', // Action ID
+          'declined', // Action ID
           'Decline', // Button Label
           showsUserInterface: true,
         ),
@@ -108,7 +121,7 @@ class NotificationServices {
     );
 
     DarwinNotificationDetails darwinNotificationDetails =
-        const DarwinNotificationDetails(
+    const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -132,7 +145,69 @@ class NotificationServices {
     });
   }
 
-   Future<void> getNotificationPermission() async {
+
+  Future<void> handleNotificationAction(NotificationResponse response, RemoteMessage message) async {
+
+    final currentToken = await SharedPrefHelper.getString('access-token');
+    final currentDriverId = await SharedPrefHelper.getInt('driver-id');
+
+    print("ACCESS TOKEN $currentToken");
+    print("DRIVER ID $currentDriverId");
+    print("RESPONSE ACTION ${response.actionId}");
+    print("ORDER ID ${message.data["orderId"]}");
+
+
+    final Map<String, dynamic> params = {
+      "status": response.actionId,
+      "driver_id": currentDriverId,
+      "order_id": message.data["orderId"]
+    };
+
+    try {
+      print('message11');
+      // Call the reset password API
+      final responseData = await _apiService.postApiWithToken(
+        NetworkConstantsUtil.confirmOrder,
+        params,
+        currentToken ?? "",
+      );
+
+      print('message2');
+
+      bool isSuccess = responseData['success'];
+      String message = responseData['message'];
+
+      print(message);
+
+      if (isSuccess) {
+
+        print(message);
+        // Handle success case
+
+        // final accessToken = responseData['accessToken'];
+        // final driverId = responseData['userData']['id'];
+
+
+        // showCustomSnackBar(context, message);
+        // context.go('/mainScreen');
+      } else {
+        print(message);
+        // Handle error case
+        // showCustomSnackBar(context, message);
+      }
+    } catch (e) {
+      print(message);
+      print("Error: $e");
+      // showCustomSnackBar(context, e.toString());
+    } finally {
+      // _isLoading = false;
+      // notifyListeners();
+    }
+  }
+
+
+
+  Future<void> getNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
       sound: true,
       provisional: true,
