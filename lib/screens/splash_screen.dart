@@ -26,10 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkLoginStatus() async {
     // Retrieve the login status from SharedPreferences
-    final isLoggedIn = await SharedPrefHelper.getBool("logged-in") ?? false;
+    final isLoggedIn = await SharedPrefHelper.getString("access-token");
 
     Timer(const Duration(seconds: 2), () {
-      if (isLoggedIn) {
+      if (isLoggedIn != null) {
         context.go('/mainScreen'); // Navigate to the home screen if logged in
       } else {
         context.go('/signIn'); // Navigate to the login screen otherwise

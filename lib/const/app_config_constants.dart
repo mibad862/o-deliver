@@ -14,7 +14,7 @@ class AppConfigConstants {
   //     'https://driverapp.staging.pegasync.com/api/';
 
   static const restApiBaseUrl =
-      'http://192.168.10.113:8000/api/';
+      'http://192.168.10.45:8000/api/';
 
 
   //Socket api url

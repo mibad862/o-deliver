@@ -14,7 +14,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _orderUpdatesEnabled = true;
 
   void clearStoredValues() async {
-    await SharedPrefHelper.clearAll();
+    // await SharedPrefHelper.clearAll();
+    await SharedPrefHelper.removeKey("access-token");
+    await SharedPrefHelper.removeKey("driver-id");
   }
 
   @override

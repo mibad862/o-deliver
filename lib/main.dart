@@ -33,6 +33,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
  // NotificationServices().showNotification(message);
  //  print(message.notification!.title.toString());
+
+  print("Handling a background message: ${message.messageId}");
+
+  // // Ensure necessary setups
+  // await setupNotificationChannel(); // Define this to create notification channels
+  // await showNotification(message); // Function to display the notification
+
 }
 
 void main() async {

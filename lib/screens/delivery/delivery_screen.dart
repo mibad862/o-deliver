@@ -18,8 +18,16 @@ class DeliveryScreen extends StatefulWidget {
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
-  Widget build(BuildContext context) {
+  // void initState() {
+  //   // TODO: implement initState
+  //
+  //   Provider.of<DeliveryScreenProvider>(context, listen: false)
+  //       .driverPickedUpOrders();
+  //   super.initState();
+  // }
 
+  @override
+  Widget build(BuildContext context) {
     String? text = 'Start Service';
     print("Rebuilding");
     return Scaffold(
@@ -27,45 +35,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
         title: const Text('Delivery'),
         actions: [
           Consumer<DeliveryScreenProvider>(
-            builder: (context, provider, child){
-              return /*Switch(
-                value: provider.isSwitched,
-                onChanged: (value) async {
-                  print("Widget Rebuild");
-
-                  // Get the background service instance
-                  final service = FlutterBackgroundService();
-
-                  bool isRunning = await service.isRunning();
-
-                  if (isRunning) {
-                    // If service is running, stop it
-                    service.invoke('stopService');
-                    setState(() {
-                      // Update switch value and any necessary text or state
-                      provider.isSwitched = false;
-                      text = 'Start Service'; // Update your text or state if needed
-                    });
-                  } else {
-                    // If service is not running, start it
-                    service.startService();
-                    setState(() {
-                      // Update switch value and any necessary text or state
-                      provider.isSwitched = true;
-                      text = 'Stop Service'; // Update your text or state if needed
-                    });
-                  }
-
-                  // Optionally, you can also call provider.changeDriverStatus or other methods:
-                  provider.changeDriverStatus(value);
-                  provider.updateDriverStatus(context);
-                },
-              );*/
-
-              Switch(
+            builder: (context, provider, child) {
+              return Switch(
                 value: provider.isSwitched ?? false,
-                onChanged: (value) async{
-
+                onChanged: (value) async {
                   provider.changeDriverStatus(value);
                   await SharedPrefHelper.saveBool("user-online", value);
 
@@ -77,7 +50,6 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   //   final service = FlutterBackgroundService();
                   //   service.invoke('stopService');
                   // }
-
 
                   // await initializeService();
                   // final service = FlutterBackgroundService();
@@ -101,27 +73,107 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-              context.push('/deliveryDetailScreen');
-            },
-            child: const DeliveryCard(
-              applicationId: '30528',
-              status: 'In-Progress',
-              fromCity: 'Arena',
-              toCity: 'Acono',
-              date: '2020/03/27 - 09:00',
-              goodsType: 'Vegetable',
-              vehicleType: 'Truck',
-              weight: '12 Kg',
-              price: 254.08,
+      body: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            flexibleSpace: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TabBar(
+                  tabs: [Text("Assigned Orders"), Text("Picked Up Orders")],
+                )
+              ],
             ),
-          );
-        },
+          ),
+          body: TabBarView(
+
+            children: [
+              Consumer<DeliveryScreenProvider>(
+                builder: (context, provider, child) {
+                  return ListView.builder(
+                    itemCount: provider.assignedOrders.length,
+                    itemBuilder: (context, index) {
+                      final currentItem = provider.assignedOrders[index];
+
+                      return InkWell(
+                        onTap: () {
+                          // context.push('/deliveryDetailScreen');
+                        },
+                        child: DeliveryCard(
+                          applicationId: currentItem["order_id"],
+                          status: currentItem["order_status"].toString(),
+                          fromCity: currentItem["from_city"],
+                          toCity: currentItem["to_city"],
+                          date: '2020/03/27 - 09:00',
+                          goodsType: 'Vegetable',
+                          vehicleType: currentItem["pro_type"],
+                          weight: currentItem["weight"].toString(),
+                          price: currentItem["package_amt"].toDouble(),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              Consumer<DeliveryScreenProvider>(
+                builder: (context, provider, child) {
+                  return ListView.builder(
+                    itemCount: provider.pickedUpOrders.length,
+                    itemBuilder: (context, index) {
+                      final currentItem = provider.pickedUpOrders[index];
+
+                      return InkWell(
+                        onTap: () {
+                          // context.push('/deliveryDetailScreen');
+                        },
+                        child: DeliveryCard(
+                          applicationId: currentItem["order_id"],
+                          status: currentItem["order_status"].toString(),
+                          fromCity: currentItem["from_city"],
+                          toCity: currentItem["to_city"],
+                          date: '2020/03/27 - 09:00',
+                          goodsType: 'Vegetable',
+                          vehicleType: currentItem["pro_type"],
+                          weight: currentItem["weight"].toString(),
+                          price: currentItem["package_amt"].toDouble(),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
+      // body: Consumer<DeliveryScreenProvider>(
+      //   builder: (context, provider, child) {
+      //     return ListView.builder(
+      //       itemCount: provider.orders.length,
+      //       itemBuilder: (context, index) {
+      //         final currentItem = provider.orders[index];
+      //
+      //         return InkWell(
+      //           onTap: () {
+      //             // context.push('/deliveryDetailScreen');
+      //           },
+      //           child: DeliveryCard(
+      //             applicationId: currentItem["order_id"],
+      //             status: currentItem["order_status"].toString(),
+      //             fromCity: currentItem["from_city"],
+      //             toCity: currentItem["to_city"],
+      //             date: '2020/03/27 - 09:00',
+      //             goodsType: 'Vegetable',
+      //             vehicleType: currentItem["pro_type"],
+      //             weight: currentItem["weight"].toString(),
+      //             price: currentItem["package_amt"].toDouble(),
+      //           ),
+      //         );
+      //       },
+      //     );
+      //   },
+      // ),
     );
   }
 }
