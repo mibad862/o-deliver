@@ -234,4 +234,67 @@ class DeliveryScreenProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateOrderStatus(BuildContext context) async {
+    _isLoading = true;
+    notifyListeners();
+
+    // Retrieve the Bearer token from shared preferences
+    String? accessToken = await SharedPrefHelper.getString('access-token');
+    int? driverId = await SharedPrefHelper.getInt('driver-id');
+
+    if (accessToken == null || driverId == null) {
+      print("Access token or driver ID is null");
+      showCustomSnackBar(context, "Error: Missing authentication data");
+      return;
+    }
+
+    final Map<String, dynamic> params = {
+      "on_duty": isSwitched! ? 1 : 0,
+    };
+
+    try {
+      print('Sending request to update driver status...');
+
+      // Call the API with the Bearer token in the headers
+      final responseData = await _apiService.postApiWithToken(
+        "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
+        params, // Request parameters
+        accessToken,
+      );
+
+
+      bool isSuccess = responseData['success'];
+      String message = responseData['message'];
+
+      print(message);
+
+      if (isSuccess) {
+
+        print("STATUS $isSwitched");
+
+        print("DRIVER ID $driverId");
+
+        // changeDriverStatus(true);
+
+
+        showCustomSnackBar(context, message);
+        // context.go('/mainScreen');
+      } else {
+
+        // changeDriverStatus(false);
+        // Handle error case
+        showCustomSnackBar(context, message);
+      }
+    } catch (e) {
+
+      // changeDriverStatus(false);
+      print("Error: $e");
+      showCustomSnackBar(context, e.toString());
+    } finally {
+      // changeDriverStatus(false);
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 }

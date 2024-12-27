@@ -87,60 +87,65 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
             ),
           ),
           body: TabBarView(
-
             children: [
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
-                  return ListView.builder(
-                    itemCount: provider.assignedOrders.length,
-                    itemBuilder: (context, index) {
-                      final currentItem = provider.assignedOrders[index];
+                  return provider.assignedOrders.isEmpty
+                      ? const Center(child: Text("No Assigned Orders Found"))
+                      : ListView.builder(
+                          itemCount: provider.assignedOrders.length,
+                          itemBuilder: (context, index) {
+                            final currentItem = provider.assignedOrders[index];
 
-                      return InkWell(
-                        onTap: () {
-                          // context.push('/deliveryDetailScreen');
-                        },
-                        child: DeliveryCard(
-                          applicationId: currentItem["order_id"],
-                          status: currentItem["order_status"].toString(),
-                          fromCity: currentItem["from_city"],
-                          toCity: currentItem["to_city"],
-                          date: '2020/03/27 - 09:00',
-                          goodsType: 'Vegetable',
-                          vehicleType: currentItem["pro_type"],
-                          weight: currentItem["weight"].toString(),
-                          price: currentItem["package_amt"].toDouble(),
-                        ),
-                      );
-                    },
-                  );
+                            return InkWell(
+                              onTap: () {
+                                context.push(
+                                    "/updateOrderScreen/${currentItem["id"]}");
+                              },
+                              child: DeliveryCard(
+                                applicationId: currentItem["order_id"],
+                                status: currentItem["order_status"].toString(),
+                                fromCity: currentItem["from_city"],
+                                toCity: currentItem["to_city"],
+                                date: '2020/03/27 - 09:00',
+                                goodsType: 'Vegetable',
+                                vehicleType: currentItem["pro_type"],
+                                weight: currentItem["weight"].toString(),
+                                price: currentItem["package_amt"].toDouble(),
+                              ),
+                            );
+                          },
+                        );
                 },
               ),
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
-                  return ListView.builder(
-                    itemCount: provider.pickedUpOrders.length,
-                    itemBuilder: (context, index) {
-                      final currentItem = provider.pickedUpOrders[index];
+                  return provider.pickedUpOrders.isEmpty
+                      ? const Center(child: Text("No Picked Up Orders Found"))
+                      : ListView.builder(
+                          itemCount: provider.pickedUpOrders.length,
+                          itemBuilder: (context, index) {
+                            final currentItem = provider.pickedUpOrders[index];
 
-                      return InkWell(
-                        onTap: () {
-                          // context.push('/deliveryDetailScreen');
-                        },
-                        child: DeliveryCard(
-                          applicationId: currentItem["order_id"],
-                          status: currentItem["order_status"].toString(),
-                          fromCity: currentItem["from_city"],
-                          toCity: currentItem["to_city"],
-                          date: '2020/03/27 - 09:00',
-                          goodsType: 'Vegetable',
-                          vehicleType: currentItem["pro_type"],
-                          weight: currentItem["weight"].toString(),
-                          price: currentItem["package_amt"].toDouble(),
-                        ),
-                      );
-                    },
-                  );
+                            return InkWell(
+                              onTap: () {
+                                context.push(
+                                    "/updateOrderScreen/${currentItem["id"]}");
+                              },
+                              child: DeliveryCard(
+                                applicationId: currentItem["order_id"],
+                                status: currentItem["order_status"].toString(),
+                                fromCity: currentItem["from_city"],
+                                toCity: currentItem["to_city"],
+                                date: '2020/03/27 - 09:00',
+                                goodsType: 'Vegetable',
+                                vehicleType: currentItem["pro_type"],
+                                weight: currentItem["weight"].toString(),
+                                price: currentItem["package_amt"].toDouble(),
+                              ),
+                            );
+                          },
+                        );
                 },
               ),
             ],

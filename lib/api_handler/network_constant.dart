@@ -18,6 +18,7 @@ class NetworkConstantsUtil {
   static String confirmOrder = 'driver/instant_delivery_notification_response';
   static String pickedUpOrders = 'driver/fetch_driver_pickup_closest_orders';
   static String assignedOrders = 'driver/fetch_driver_assigned_closest_orders';
+  static String updateOrder = 'driver/order-status';
   static String vehicles = 'driver/vehicles';
   static String logout = 'users/logout';
 

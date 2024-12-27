@@ -633,7 +633,7 @@ class SignUp extends StatelessWidget {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image.file(
-                                    File(provider.licenseNumberPhoto!.path),
+                                    File(provider.profileImagePhoto!.path),
                                     height: 150,
                                     width: 150,
                                     fit: BoxFit.cover,

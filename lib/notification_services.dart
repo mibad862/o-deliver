@@ -75,7 +75,8 @@ class NotificationServices {
       // print(message.data['distance']);
       // print(message.data['body']);
       print("TITLE ${message.data['title']}");
-      print("TITLE ${message.data['title']}");
+      print("TITLE ${message.data['name']}");
+      print("TITLE ${message.data['channel_id']}");
       // print(message.data['orderId']);
 
       print(message.notification!.title);
@@ -92,6 +93,7 @@ class NotificationServices {
 
   Future<void> showNotification(RemoteMessage message) async {
     AndroidNotificationChannel channel = AndroidNotificationChannel(
+      // message.data["channel_id"],
       "1",
       "High Important Notification",
       importance: Importance.max,
@@ -111,6 +113,7 @@ class NotificationServices {
           showsUserInterface: true,
         ),
       ],
+
       channel.id.toString(),
       channel.name.toString(),
       channelDescription: "Your Channel Description",

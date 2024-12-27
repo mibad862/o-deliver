@@ -25,7 +25,9 @@ import 'providers/deliveryScreen_provider.dart';
 import 'providers/forgetpassword_provider.dart';
 import 'providers/resetpassword_provider.dart';
 import 'providers/signup_provider.dart';
+import 'providers/update_order_provider.dart';
 import 'providers/verifyOtp_provider.dart';
+import 'screens/update_order_screen.dart';
 
 
 @pragma("vm:entry-point")
@@ -35,6 +37,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
  //  print(message.notification!.title.toString());
 
   print("Handling a background message: ${message.messageId}");
+  print(message.notification!.title);
+  print("Handling a background message: ${message.data["channel_id"]}");
+  print("Handling a background message: ${message.data["title"]}");
+  print("Handling a background message: ${message.data["body"]}");
 
   // // Ensure necessary setups
   // await setupNotificationChannel(); // Define this to create notification channels
@@ -172,6 +178,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ForgetPasswordProvider()),
         ChangeNotifierProvider(create: (_) => ResetPasswordProvider()),
         ChangeNotifierProvider(create: (_) => DeliveryScreenProvider()),
+        ChangeNotifierProvider(create: (_) => UpdateOrderProvider()),
       ],
       child: MaterialApp.router(
         builder: EasyLoading.init(),
@@ -245,6 +252,14 @@ final GoRouter router = GoRouter(
       path: '/deliveryDetailScreen',
       builder: (context, state) {
         return const DeliveryDetailScreen();
+      },
+    ),
+
+    GoRoute(
+      path: '/updateOrderScreen/:currentOrderId',
+      builder: (context, state) {
+        final String currentOrderId = state.pathParameters["currentOrderId"] ?? "";
+        return UpdateOrderScreen(currentOrderId: currentOrderId);
       },
     ),
     GoRoute(
