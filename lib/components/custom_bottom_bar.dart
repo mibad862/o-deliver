@@ -22,7 +22,6 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
   SnakeBarBehaviour snakeBarStyle = SnakeBarBehaviour.floating;
   EdgeInsets padding = const EdgeInsets.all(12);
 
-  int _selectedItemPosition = 0;
   SnakeShape snakeShape = SnakeShape.circle;
 
   bool showSelectedLabels = false;

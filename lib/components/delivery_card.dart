@@ -13,7 +13,7 @@ class DeliveryCard extends StatelessWidget {
   final double price;
 
   const DeliveryCard({
-    Key? key,
+    super.key,
     required this.applicationId,
     required this.status,
     required this.fromCity,
@@ -23,7 +23,7 @@ class DeliveryCard extends StatelessWidget {
     required this.vehicleType,
     required this.weight,
     required this.price,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

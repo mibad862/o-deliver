@@ -97,7 +97,7 @@ class NotificationServices {
   }
 
   Future<void> showNotification(RemoteMessage message) async {
-    AndroidNotificationChannel channel = AndroidNotificationChannel(
+    AndroidNotificationChannel channel = const AndroidNotificationChannel(
       // message.data["channel_id"],
       "1",
       "High Important Notification",

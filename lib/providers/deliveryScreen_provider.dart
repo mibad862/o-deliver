@@ -104,7 +104,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
     }
 
     try {
-      print('Sending request to update driver status...');
+
 
       // Call the API with the Bearer token in the headers
       final responseData = await ApiService.getApiWithToken(

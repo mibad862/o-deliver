@@ -367,7 +367,7 @@ class _PickUpDetailScreenState extends State<PickUpDetailScreen> {
                     // Round rect border
                     radius: const Radius.circular(12),
                     // Rounded corners
-                    dashPattern: [5, 5],
+                    dashPattern: const [5, 5],
                     // Do
                     child: const SizedBox(
                       width: double.infinity,

@@ -101,7 +101,9 @@ class SignInProvider with ChangeNotifier {
         final int otp = responseData['otp'] ?? 'Login successful!';
         print(otp);
         showCustomSnackBar(context, message);
-        context.go("/verifyOtp/${emailController.text.toString()}");
+        // context.go("/verifyOtp/${emailController.text.toString()}");
+        context.go("/verifyOtp/${emailController.text.toString()}/$otp");
+
         clearControllers();
       } else {
         // Handle error case

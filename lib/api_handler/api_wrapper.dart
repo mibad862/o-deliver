@@ -38,8 +38,6 @@ class ApiService {
 
     final accessToken = await SharedPrefHelper.getString("access-token");
 
-    print("ACCESS TOKEN $accessToken");
-
     final url = Uri.parse('${NetworkConstantsUtil.baseUrl}$endpoint');
 
     final response = await http.post(
@@ -64,7 +62,6 @@ class ApiService {
   ) async {
     final url = Uri.parse('${NetworkConstantsUtil.baseUrl}$endpoint');
 
-    print(url);
 
     final response = await http.get(
       url,

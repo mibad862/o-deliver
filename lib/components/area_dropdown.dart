@@ -104,7 +104,7 @@ class _AreaSelectionDialogState extends State<AreaSelectionDialog> {
           onPressed: () {
             Navigator.of(context).pop(selectedAreas); // Return the selected areas
           },
-          child: Text('Done'),
+          child: const Text('Done'),
         ),
       ],
     );

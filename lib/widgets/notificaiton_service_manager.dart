@@ -141,17 +141,17 @@ class NotificationServiceManager {
     String? payload,
   }) async {
     // Define action buttons for the notification
-    final AndroidNotificationAction acceptAction = AndroidNotificationAction(
+    const AndroidNotificationAction acceptAction = AndroidNotificationAction(
       'accept', // Action ID
       'Accept', // Button text
     );
 
-    final AndroidNotificationAction declineAction = AndroidNotificationAction(
+    const AndroidNotificationAction declineAction = AndroidNotificationAction(
       'decline', // Action ID
       'Decline', // Button text
     );
 
-    AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    AndroidNotificationDetails androidDetails = const AndroidNotificationDetails(
       'channel_id',
       // This should match the channel ID defined in _createNotificationChannel
       'Channel Name',

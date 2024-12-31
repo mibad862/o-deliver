@@ -305,7 +305,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -362,7 +362,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -417,7 +417,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -649,7 +649,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -704,7 +704,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -758,7 +758,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -812,7 +812,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -866,7 +866,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -1158,7 +1158,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,
@@ -1201,7 +1201,7 @@ class SignUp extends StatelessWidget {
                                 // Round rect border
                                 radius: const Radius.circular(12),
                                 // Rounded corners
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 // Do
                                 child: const SizedBox(
                                   width: double.infinity,

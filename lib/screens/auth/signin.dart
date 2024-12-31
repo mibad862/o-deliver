@@ -34,8 +34,8 @@ class SignInState extends State<SignIn> {
                 children: [
                   appBar(),
 
-                  Text("EMAIL : ${signInProvider.emailController.text}"),
-                  Text("PASS ${signInProvider.passwordController.text}"),
+                  // Text("EMAIL : ${signInProvider.emailController.text}"),
+                  // Text("PASS ${signInProvider.passwordController.text}"),
 
                   //Email
                   CustomTextField(

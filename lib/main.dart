@@ -18,9 +18,7 @@ import 'package:o_deliver/screens/pickup/pickup_detail_screen.dart';
 import 'package:o_deliver/screens/splash_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
 import 'firebase_options.dart';
-import 'notification_services.dart';
 import 'providers/deliveryScreen_provider.dart';
 import 'providers/forgetpassword_provider.dart';
 import 'providers/resetpassword_provider.dart';
@@ -272,10 +270,11 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/verifyOtp/:emailText',
+      path: '/verifyOtp/:emailText/:otp',
       builder: (context, state) {
         final String emailText = state.pathParameters["emailText"] ?? "";
-        return VerifyOtp(emailText: emailText);
+        final String otp = state.pathParameters["otp"] ?? "";
+        return VerifyOtp(emailText: emailText, otp: otp);
       },
     ),
     GoRoute(

@@ -29,7 +29,7 @@ class ResetPassword extends StatelessWidget {
                     children: [
                       Text(
                         "Reset Password $email",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
                           color: Color(0xfff34147),
@@ -38,7 +38,7 @@ class ResetPassword extends StatelessWidget {
 
                       Text(
                         "Token $token",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
                           color: Color(0xfff34147),

@@ -16,16 +16,70 @@ class VerifyOtpProvider extends ChangeNotifier {
 
   String? fcmToken = "";
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool _isContinueLoading = false;
+  bool get isContinueLoading => _isContinueLoading;
+
+  bool _ResendLoading = false;
+  bool get isResendLoading => _ResendLoading;
+
+  String currentOTP = "";
 
   Future<void> getDeviceToken() async {
     fcmToken = await FirebaseMessaging.instance.getToken();
     print("FCM TOKEN $fcmToken");
   }
 
+
+  Future<void> resendOTP(String emailText, BuildContext context) async {
+    _ResendLoading = true;
+    notifyListeners();
+
+    print(emailText);
+    print(otpController.text);
+
+    final Map<String, dynamic> params = {
+      "email": emailText,
+    };
+
+    try {
+      print('message11');
+      // Call the reset password API
+      final responseData = await ApiService.postApiWithoutToken(
+        NetworkConstantsUtil.resendOTP,
+        params,
+      );
+
+      print('message2');
+
+      bool isSuccess = responseData['success'];
+      String message = responseData['message'];
+
+      print(message);
+
+      if (isSuccess) {
+        // Handle success case
+
+        currentOTP = responseData['otp'].toString();
+
+        notifyListeners();
+
+        showCustomSnackBar(context, message);
+
+      } else {
+        // Handle error case
+        showCustomSnackBar(context, message);
+      }
+    } catch (e) {
+      print("Error: $e");
+      showCustomSnackBar(context, e.toString());
+    } finally {
+      _ResendLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> verifyOTP(String emailText, BuildContext context) async {
-    _isLoading = true;
+    _isContinueLoading = true;
     notifyListeners();
 
     print(emailText);
@@ -74,7 +128,7 @@ class VerifyOtpProvider extends ChangeNotifier {
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
     } finally {
-      _isLoading = false;
+      _isContinueLoading = false;
       notifyListeners();
     }
   }

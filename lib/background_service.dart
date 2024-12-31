@@ -146,10 +146,6 @@ void onStart(ServiceInstance service) async {
     print("Error: Missing or invalid driver ID");
   }
 
-  // final String apiUrl = "https://driverapp.staging.pegasync.com/api/driver/update_driver_location/$currentDriverId";
-  final String apiUrl =
-      "http://192.168.10.70:8000/driver/update_driver_location/$currentDriverId";
-
   // Start location updates
   locationService.startLocationUpdates(service);
 

@@ -8,9 +8,11 @@ class VerifyOtp extends StatefulWidget {
   const VerifyOtp({
     super.key,
     required this.emailText,
+    required this.otp,
   });
 
   final String emailText;
+  final String otp;
 
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
@@ -43,6 +45,12 @@ class _VerifyOtpState extends State<VerifyOtp> {
                 child: Column(
                   children: [
                     appBar(),
+                    Text("CURRENT OTP"),
+                    if (otpProvider.currentOTP.isEmpty) Text(widget.otp),
+                    Text(
+                      otpProvider.currentOTP,
+                      style: TextStyle(fontSize: 16), // Adjust style as needed
+                    ),
                     Pinput(
                       obscureText: true,
                       length: 6,
@@ -55,8 +63,18 @@ class _VerifyOtpState extends State<VerifyOtp> {
                         border: Border.all(color: const Color(0xfff34147)),
                       ),
                     ),
+                    SizedBox(height: 20),
+                    otpProvider.isResendLoading
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                            onTap: () {
+                              otpProvider.resendOTP(widget.emailText, context);
+                            },
+                            buttonText: "Resend",
+                            sizeWidth: 80,
+                          ),
                     const Spacer(),
-                    otpProvider.isLoading
+                    otpProvider.isContinueLoading
                         ? const Align(
                             alignment: Alignment.center,
                             child: CircularProgressIndicator())
@@ -75,7 +93,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                               buttonColor: const Color(0xfff34147),
                             ),
                           ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               )
@@ -111,11 +129,10 @@ class _VerifyOtpState extends State<VerifyOtp> {
         ),
         Text(
           widget.emailText,
-          style: TextStyle(color: Color(0xfff34147)),
+          style: const TextStyle(color: Color(0xfff34147)),
         ),
         const SizedBox(height: 25),
       ],
     );
   }
-
 }
