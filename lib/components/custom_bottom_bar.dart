@@ -1,10 +1,5 @@
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
-import 'package:go_router/go_router.dart';
-
 import '../values/app_colors.dart';
 
 class CustomBottomBar extends StatefulWidget {

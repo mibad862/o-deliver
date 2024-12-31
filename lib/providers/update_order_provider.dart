@@ -16,7 +16,6 @@ class UpdateOrderProvider extends ChangeNotifier {
 
   bool _isLoading = false;
 
-  final _apiService = ApiService();
   XFile? multimediaPhoto;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -70,7 +69,7 @@ class UpdateOrderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.getApiWithoutToken(
+      final response = await ApiService.getApiWithoutToken(
         NetworkConstantsUtil.getAllData,
       );
 

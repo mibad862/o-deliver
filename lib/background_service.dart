@@ -98,13 +98,11 @@
 // }
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
 import 'package:o_deliver/shared_pref_helper.dart';
 
 import 'api_handler/api_wrapper.dart';
@@ -134,8 +132,6 @@ void onStart(ServiceInstance service) async {
 
   final locationService = LocationService();
 
-  final _apiService = ApiService();
-
   String? currentToken = await SharedPrefHelper.getString("access-token");
   int? currentDriverId = await SharedPrefHelper.getInt("driver-id");
 
@@ -150,9 +146,9 @@ void onStart(ServiceInstance service) async {
     print("Error: Missing or invalid driver ID");
   }
 
-
   // final String apiUrl = "https://driverapp.staging.pegasync.com/api/driver/update_driver_location/$currentDriverId";
-  final String apiUrl = "http://192.168.10.70:8000/driver/update_driver_location/$currentDriverId";
+  final String apiUrl =
+      "http://192.168.10.70:8000/driver/update_driver_location/$currentDriverId";
 
   // Start location updates
   locationService.startLocationUpdates(service);
@@ -192,27 +188,13 @@ void onStart(ServiceInstance service) async {
         print("CURRENT TOKEN $currentToken");
         print("CURRENT DRIVER ID $currentDriverId");
 
-
         try {
-
-          final responseData = await _apiService.postApiWithToken(
-            "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
-            params,
-            currentToken ?? "",
+          final responseData = await ApiService.postApiWithToken(
+            endpoint:
+                "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
+            body: params,
+            // token: currentToken ?? "",
           );
-
-          // print("PARAMS $params");
-          // print("CURRENT TOKEN $currentToken");
-          // print("CURRENT DRIVER ID $currentDriverId");
-
-          // final response = await http.post(
-          //   Uri.parse(apiUrl),
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //     'Authorization': 'Bearer $currentToken',
-          //   },
-          //   body: '{"lat": ${position.latitude}, "lng": ${position.longitude}}',
-          // );
 
           bool isSuccess = responseData['success'];
           String message = responseData['message'];
@@ -221,13 +203,11 @@ void onStart(ServiceInstance service) async {
           print(currentToken);
           print(currentDriverId);
 
-
-
-
           if (isSuccess) {
             print('Location updated successfully. $message');
           } else {
-            print('FFailed to update location. Status code: ${responseData["success"]}');
+            print(
+                'FFailed to update location. Status code: ${responseData["success"]}');
           }
         } catch (e) {
           print('Error while updating location: $e');
@@ -243,40 +223,29 @@ void onStart(ServiceInstance service) async {
 
     Timer.periodic(Duration(seconds: 10), (timer) async {
       Position position = await locationService.getCurrentLocation();
-      print('Uppdated Location: Lat: ${position.latitude}, Long: ${position.longitude}');
+      print(
+          'Uppdated Location: Lat: ${position.latitude}, Long: ${position.longitude}');
 
       final Map<String, dynamic> params = {
         "lat": position.latitude,
         "lng": position.longitude,
       };
 
-
       // Make the API call for iOS
       try {
-
-        final responseData = await _apiService.postApiWithToken(
-          "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
-          params,
-          currentToken ?? "",
+        final responseData = await ApiService.postApiWithToken(
+          endpoint:
+              "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
+          body: params,
+          // token: currentToken ?? "",
         );
-
-        // final response = await http.post(
-        //   Uri.parse(apiUrl),
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'Authorization': 'Bearer $currentToken',
-        //   },
-        //   body: '{"lat": ${position.latitude}, "lng": ${position.longitude}}',
-        // );
 
         bool isSuccess = responseData['success'];
         String message = responseData['message'];
 
         if (isSuccess) {
           print('Location updated successfully (iOS). $message');
-        } else {
-
-        }
+        } else {}
       } catch (e) {
         print('Error while updating location (iOS): $e');
       }
@@ -295,4 +264,3 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 
   return true;
 }
-

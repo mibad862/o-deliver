@@ -13,7 +13,6 @@ class VerifyOtpProvider extends ChangeNotifier {
   }
   // Text controllers to capture user inputs
   final TextEditingController otpController = TextEditingController();
-  final _apiService = ApiService();
 
   String? fcmToken = "";
 
@@ -41,7 +40,7 @@ class VerifyOtpProvider extends ChangeNotifier {
     try {
       print('message11');
       // Call the reset password API
-      final responseData = await _apiService.postApiWithoutToken(
+      final responseData = await ApiService.postApiWithoutToken(
         NetworkConstantsUtil.verifyOtp,
         params,
       );

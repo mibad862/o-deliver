@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:o_deliver/util/snackbar_util.dart';
 import '../api_handler/api_wrapper.dart';
 import '../api_handler/network_constant.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 
 class SignUpProvider with ChangeNotifier {
   SignUpProvider() {
@@ -135,8 +134,6 @@ class SignUpProvider with ChangeNotifier {
     loaderQuantityController.clear();
     notifyListeners();
   }
-
-  final _apiService = ApiService();
 
   int? selectedCityId;
   String? selectedCityName;
@@ -328,7 +325,7 @@ class SignUpProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.getApiWithoutToken(
+      final response = await ApiService.getApiWithoutToken(
         NetworkConstantsUtil.getAllData,
       );
 

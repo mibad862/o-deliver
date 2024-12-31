@@ -20,7 +20,7 @@ class NetworkConstantsUtil {
   static String assignedOrders = 'driver/fetch_driver_assigned_closest_orders';
   static String updateOrder = 'driver/order-status';
   static String vehicles = 'driver/vehicles';
-  static String logout = 'users/logout';
+  static String logout = 'driver/logout/';
 
   static String loginWithPhone = 'users/login-with-phonenumber';
 

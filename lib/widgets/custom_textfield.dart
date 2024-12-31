@@ -109,7 +109,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             color: Colors.black,
           ),
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             labelText: widget.label,
             suffixIcon: widget.suffixIcon,
             prefixIcon: widget.prefixIcon,

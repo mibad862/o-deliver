@@ -7,7 +7,6 @@ import '../api_handler/network_constant.dart';
 
 class ForgetPasswordProvider extends ChangeNotifier {
 
-  final _apiService = ApiService();
   final emailController = TextEditingController();
 
   bool _isLoading = false;
@@ -26,7 +25,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
     try {
       print('message1');
       // Call the reset password API
-      final responseData = await _apiService.postApiWithoutToken(
+      final responseData = await ApiService.postApiWithoutToken(
         NetworkConstantsUtil.forgetPassword,
         params,
       );

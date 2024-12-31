@@ -73,7 +73,7 @@ class CustomButton extends StatelessWidget {
                           icon,
                           color: iconColor,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           buttonText,
                           overflow: TextOverflow.ellipsis,

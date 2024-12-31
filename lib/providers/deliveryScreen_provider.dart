@@ -1,13 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../api_handler/api_wrapper.dart';
 import '../api_handler/network_constant.dart';
-import '../models/driver_pickedup_orders.dart';
 import '../shared_pref_helper.dart';
 import '../util/snackbar_util.dart';
 
 class DeliveryScreenProvider extends ChangeNotifier {
-  DeliveryScreenProvider(){
+  DeliveryScreenProvider() {
     _initializeDriverStatus();
     driverAssignedOrders();
     driverPickedUpOrders();
@@ -22,9 +20,8 @@ class DeliveryScreenProvider extends ChangeNotifier {
   List<dynamic> _assignedOrders = [];
   List<dynamic> get assignedOrders => _assignedOrders;
 
-  final _apiService = ApiService();
 
-  void changeDriverStatus(bool value){
+  void changeDriverStatus(bool value) {
     isSwitched = value;
     notifyListeners();
   }
@@ -33,7 +30,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
     isSwitched = await SharedPrefHelper.getBool("user-online") ?? false;
     notifyListeners(); // Notify UI after fetching the value
   }
-
 
   Future<void> driverPickedUpOrders() async {
     _isLoading = true;
@@ -49,26 +45,22 @@ class DeliveryScreenProvider extends ChangeNotifier {
       return;
     }
 
-
     try {
       print('Sending request to update driver status...');
 
       // Call the API with the Bearer token in the headers
-      final responseData = await _apiService.getApiWithToken(
+      final responseData = await ApiService.getApiWithToken(
         "${NetworkConstantsUtil.pickedUpOrders}/$driverId", // API endpoint
         accessToken,
       );
 
       // print('Sending request to update driver status...');
 
-
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
       // String orders = responseData['orders'];
 
       if (isSuccess) {
-
-
         print("DRIVER ID $driverId");
 
         _pickedUpOrders = responseData['orders'];
@@ -78,19 +70,15 @@ class DeliveryScreenProvider extends ChangeNotifier {
 
         // changeDriverStatus(true);
 
-
         // print(orders);
         // print(isSuccess);
         // context.go('/mainScreen');
       } else {
-
         // changeDriverStatus(false);
         // Handle error case
         print(message);
-
       }
     } catch (e) {
-
       // changeDriverStatus(false);
       print("Error: $e");
       // print(e.toString());
@@ -115,26 +103,22 @@ class DeliveryScreenProvider extends ChangeNotifier {
       return;
     }
 
-
     try {
       print('Sending request to update driver status...');
 
       // Call the API with the Bearer token in the headers
-      final responseData = await _apiService.getApiWithToken(
+      final responseData = await ApiService.getApiWithToken(
         "${NetworkConstantsUtil.assignedOrders}/$driverId", // API endpoint
         accessToken,
       );
 
       // print('Sending request to update driver status...');
 
-
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
       // String orders = responseData['orders'];
 
       if (isSuccess) {
-
-
         print("DRIVER ID $driverId");
 
         _assignedOrders = responseData['orders'];
@@ -144,20 +128,16 @@ class DeliveryScreenProvider extends ChangeNotifier {
 
         // changeDriverStatus(true);
 
-
         // print(orders);
         // print(isSuccess);
         // context.go('/mainScreen');
       } else {
-
         // changeDriverStatus(false);
         // Handle error case
         print(_assignedOrders);
         print(message);
-
       }
     } catch (e) {
-
       // changeDriverStatus(false);
       print("Error: $e");
       // print(e.toString());
@@ -167,9 +147,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-
-
 
   Future<void> updateDriverStatus(BuildContext context) async {
     _isLoading = true;
@@ -193,12 +170,12 @@ class DeliveryScreenProvider extends ChangeNotifier {
       print('Sending request to update driver status...');
 
       // Call the API with the Bearer token in the headers
-      final responseData = await _apiService.postApiWithToken(
-        "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
-        params, // Request parameters
-        accessToken,
+      final responseData = await ApiService.postApiWithToken(
+        endpoint:
+            "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
+        body: params, // Request parameters
+        // token: accessToken,
       );
-
 
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
@@ -206,24 +183,20 @@ class DeliveryScreenProvider extends ChangeNotifier {
       print(message);
 
       if (isSuccess) {
-
         print("STATUS $isSwitched");
 
         print("DRIVER ID $driverId");
 
         // changeDriverStatus(true);
 
-
         showCustomSnackBar(context, message);
         // context.go('/mainScreen');
       } else {
-
         // changeDriverStatus(false);
         // Handle error case
         showCustomSnackBar(context, message);
       }
     } catch (e) {
-
       // changeDriverStatus(false);
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
@@ -256,12 +229,12 @@ class DeliveryScreenProvider extends ChangeNotifier {
       print('Sending request to update driver status...');
 
       // Call the API with the Bearer token in the headers
-      final responseData = await _apiService.postApiWithToken(
-        "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
-        params, // Request parameters
-        accessToken,
+      final responseData = await ApiService.postApiWithToken(
+        endpoint:
+            "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
+        body: params, // Request parameters
+        // token: accessToken,
       );
-
 
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
@@ -269,24 +242,20 @@ class DeliveryScreenProvider extends ChangeNotifier {
       print(message);
 
       if (isSuccess) {
-
         print("STATUS $isSwitched");
 
         print("DRIVER ID $driverId");
 
         // changeDriverStatus(true);
 
-
         showCustomSnackBar(context, message);
         // context.go('/mainScreen');
       } else {
-
         // changeDriverStatus(false);
         // Handle error case
         showCustomSnackBar(context, message);
       }
     } catch (e) {
-
       // changeDriverStatus(false);
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
@@ -296,5 +265,4 @@ class DeliveryScreenProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

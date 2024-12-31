@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:o_deliver/providers/deliveryScreen_provider.dart';
 import 'package:o_deliver/shared_pref_helper.dart';
 import 'package:provider/provider.dart';
-
 import '../../background_service.dart';
 import '../../components/delivery_card.dart';
-import '../../location_service.dart';
 
 class DeliveryScreen extends StatefulWidget {
   const DeliveryScreen({super.key});
@@ -18,14 +16,6 @@ class DeliveryScreen extends StatefulWidget {
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
-  // void initState() {
-  //   // TODO: implement initState
-  //
-  //   Provider.of<DeliveryScreenProvider>(context, listen: false)
-  //       .driverPickedUpOrders();
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     String? text = 'Start Service';
@@ -42,14 +32,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   provider.changeDriverStatus(value);
                   await SharedPrefHelper.saveBool("user-online", value);
 
-                  // if (value) {
-                  //   // Start the background service when the switch is turned on
-                  //   await initializeService();
-                  // } else {
-                  //   // Stop the background service when the switch is turned off
-                  //   final service = FlutterBackgroundService();
-                  //   service.invoke('stopService');
-                  // }
+                  if (value) {
+                    // Start the background service when the switch is turned on
+                    await initializeService();
+                  } else {
+                    // Stop the background service when the switch is turned off
+                    final service = FlutterBackgroundService();
+                    service.invoke('stopService');
+                  }
 
                   // await initializeService();
                   // final service = FlutterBackgroundService();
@@ -77,11 +67,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            flexibleSpace: Column(
+            flexibleSpace: const Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TabBar(
-                  tabs: [Text("Assigned Orders"), Text("Picked Up Orders")],
+                  tabs: [
+                    Text("Assigned Orders"),
+                    Text("Picked Up Orders"),
+                  ],
                 )
               ],
             ),

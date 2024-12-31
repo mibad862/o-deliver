@@ -1,15 +1,10 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/api_handler/api_wrapper.dart';
-
 import '../api_handler/network_constant.dart';
 
 class ResetPasswordProvider extends ChangeNotifier {
 
-  final _apiService = ApiService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -50,7 +45,7 @@ class ResetPasswordProvider extends ChangeNotifier {
     try {
       print('message1');
       // Call the reset password API
-      final responseData = await _apiService.postApiWithoutToken(
+      final responseData = await ApiService.postApiWithoutToken(
         NetworkConstantsUtil.resetPassword,
         params,
       );

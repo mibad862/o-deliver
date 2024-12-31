@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:o_deliver/components/custom_bottom_bar.dart';
-import 'package:o_deliver/shared_pref_helper.dart';
+import 'package:o_deliver/providers/settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,11 +12,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _orderUpdatesEnabled = true;
 
-  void clearStoredValues() async {
-    // await SharedPrefHelper.clearAll();
-    await SharedPrefHelper.removeKey("access-token");
-    await SharedPrefHelper.removeKey("driver-id");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,13 +99,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const Divider(),
 
-          ListTile(
-            onTap: (){
-              clearStoredValues();
-              context.go("/signIn");
+          Consumer<SettingsProvider>(
+            builder: (context, provider, child){
+              return ListTile(
+                onTap: (){
+                  provider.logoutUser(context);
+                  // context.go("/signIn");
+                },
+                title: const Text('Logout'),
+                leading: const Icon(Icons.logout),
+              );
             },
-            title: Text('Logout'),
-            leading: Icon(Icons.logout),
           ),
 
         ],

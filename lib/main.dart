@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/providers/sigin_provider.dart';
 import 'package:o_deliver/screens/auth/forget_password.dart';
@@ -18,41 +19,94 @@ import 'package:o_deliver/screens/splash_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import 'background_service.dart';
 import 'firebase_options.dart';
 import 'notification_services.dart';
 import 'providers/deliveryScreen_provider.dart';
 import 'providers/forgetpassword_provider.dart';
 import 'providers/resetpassword_provider.dart';
+import 'providers/settings_provider.dart';
 import 'providers/signup_provider.dart';
 import 'providers/update_order_provider.dart';
 import 'providers/verifyOtp_provider.dart';
 import 'screens/update_order_screen.dart';
+import 'widgets/notificaiton_service_manager.dart';
 
 
 @pragma("vm:entry-point")
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
- // NotificationServices().showNotification(message);
- //  print(message.notification!.title.toString());
-
   print("Handling a background message: ${message.messageId}");
-  print(message.notification!.title);
-  print("Handling a background message: ${message.data["channel_id"]}");
-  print("Handling a background message: ${message.data["title"]}");
-  print("Handling a background message: ${message.data["body"]}");
 
-  // // Ensure necessary setups
-  // await setupNotificationChannel(); // Define this to create notification channels
-  // await showNotification(message); // Function to display the notification
+  // Access FlutterLocalNotificationsPlugin
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
+  // Define actions for the background notification
+  const AndroidNotificationAction acceptAction = AndroidNotificationAction(
+    'accept', // Action ID
+    'Accept', // Button text
+  );
+
+  const AndroidNotificationAction declineAction = AndroidNotificationAction(
+    'decline', // Action ID
+    'Decline', // Button text
+  );
+
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'channel_id', // Match the channel ID defined in _createNotificationChannel
+    'Channel Name',
+    importance: Importance.high,
+    priority: Priority.high,
+    actions: [acceptAction, declineAction], // Add actions here
+  );
+
+  const NotificationDetails notificationDetails = NotificationDetails(
+    android: androidDetails,
+  );
+
+  // Show notification
+  await flutterLocalNotificationsPlugin.show(
+    0, // Notification ID
+    message.notification?.title ?? 'Background Notification',
+    message.notification?.body ?? 'You have a new notification',
+    notificationDetails,
+    payload: message.data['payload'],
+  );
 }
+
+
+// @pragma("vm:entry-point")
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//
+//   // await NotificationServiceManager().showNotification(
+//   //   title: message.notification?.title,
+//   //   body: message.notification?.body,
+//   //   payload: message.data['payload'],
+//   // );
+//
+//   // await Firebase.initializeApp();
+//  // NotificationServices().showNotification(message);
+//  //  print(message.notification!.title.toString());
+//
+//   print("Handling a background message: ${message.messageId}");
+//   print(message.data["actionButtons"]);
+//   print(message.notification!.title);
+//   print("Handling a background message: ${message.data["channel_id"]}");
+//   print("Handling a background message: ${message.data["title"]}");
+//   print("Handling a background message: ${message.data["body"]}");
+//
+//   // // Ensure necessary setups
+//   // await setupNotificationChannel(); // Define this to create notification channels
+//   // await showNotification(message); // Function to display the notification
+//
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // await Permission.notification.isDenied.then(
   //         (value){
@@ -62,12 +116,13 @@ void main() async {
   //     }
   // );
 
+  WidgetsFlutterBinding.ensureInitialized();
 
 
+
+  await NotificationServiceManager().initialize();
   await requestPermissions();
   //  await initializeService();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 
@@ -179,6 +234,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ResetPasswordProvider()),
         ChangeNotifierProvider(create: (_) => DeliveryScreenProvider()),
         ChangeNotifierProvider(create: (_) => UpdateOrderProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MaterialApp.router(
         builder: EasyLoading.init(),

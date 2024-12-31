@@ -55,7 +55,7 @@ class LocationService {
   // Function to start location updates
   void startLocationUpdates(ServiceInstance service) {
     // Start periodic updates for location in the background
-    Timer.periodic(Duration(seconds: 10), (timer) async {
+    Timer.periodic(const Duration(seconds: 10), (timer) async {
       Position position = await getCurrentLocation();
       if (service is AndroidServiceInstance && await service.isForegroundService()) {
         // Set foreground notification with updated location

@@ -49,7 +49,7 @@ class UpdateOrderScreen extends StatelessWidget {
                   },
                   selectedHead: updateOrderProvider.selectedStatusName,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (updateOrderProvider.showMultimediaPhoto)
                   GestureDetector(
                     onTap: () {
@@ -78,7 +78,7 @@ class UpdateOrderScreen extends StatelessWidget {
                       // Round rect border
                       radius: const Radius.circular(12),
                       // Rounded corners
-                      dashPattern: [5, 5],
+                      dashPattern: const [5, 5],
                       // Do
                       child: const SizedBox(
                         width: double.infinity,

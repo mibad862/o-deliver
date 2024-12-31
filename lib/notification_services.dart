@@ -9,14 +9,12 @@ import 'shared_pref_helper.dart';
 
 class NotificationServices {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  final _apiService = ApiService();
   final _flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
-
 
   void initLocalNotifications(
       BuildContext context, RemoteMessage message) async {
     var androidInitializationSettings =
-    const AndroidInitializationSettings("@mipmap/ic_launcher");
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
     var iosInitializationSettings = const DarwinInitializationSettings();
 
     var initializationSettings = InitializationSettings(
@@ -70,6 +68,13 @@ class NotificationServices {
       // // print(message.data['body']);
       // print(message.data['imageUrl']);
 
+
+      if (message.data.isNotEmpty) {
+        // Handle custom data
+        final actionButtons = message.data['actionButtons'];
+        print('Action Buttons: $actionButtons');
+      }
+
       print("HELLO");
       // print(message.data);
       // print(message.data['distance']);
@@ -100,7 +105,7 @@ class NotificationServices {
     );
 
     AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       actions: [
         const AndroidNotificationAction(
           'accepted', // Action ID
@@ -124,7 +129,7 @@ class NotificationServices {
     );
 
     DarwinNotificationDetails darwinNotificationDetails =
-    const DarwinNotificationDetails(
+        const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -148,9 +153,8 @@ class NotificationServices {
     });
   }
 
-
-  Future<void> handleNotificationAction(NotificationResponse response, RemoteMessage message) async {
-
+  Future<void> handleNotificationAction(
+      NotificationResponse response, RemoteMessage message) async {
     final currentToken = await SharedPrefHelper.getString('access-token');
     final currentDriverId = await SharedPrefHelper.getInt('driver-id');
 
@@ -159,7 +163,6 @@ class NotificationServices {
     print("RESPONSE ACTION ${response.actionId}");
     print("ORDER ID ${message.data["orderId"]}");
 
-
     final Map<String, dynamic> params = {
       "status": response.actionId,
       "driver_id": currentDriverId,
@@ -167,15 +170,10 @@ class NotificationServices {
     };
 
     try {
-      print('message11');
-      // Call the reset password API
-      final responseData = await _apiService.postApiWithToken(
-        NetworkConstantsUtil.confirmOrder,
-        params,
-        currentToken ?? "",
+      final responseData = await ApiService.postApiWithToken(
+        endpoint: NetworkConstantsUtil.confirmOrder,
+        body: params,
       );
-
-      print('message2');
 
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
@@ -183,13 +181,11 @@ class NotificationServices {
       print(message);
 
       if (isSuccess) {
-
         print(message);
         // Handle success case
 
         // final accessToken = responseData['accessToken'];
         // final driverId = responseData['userData']['id'];
-
 
         // showCustomSnackBar(context, message);
         // context.go('/mainScreen');
@@ -207,8 +203,6 @@ class NotificationServices {
       // notifyListeners();
     }
   }
-
-
 
   Future<void> getNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(

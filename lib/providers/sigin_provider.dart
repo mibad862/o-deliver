@@ -10,7 +10,6 @@ class SignInProvider with ChangeNotifier {
   SignInProvider(){
     loadCredentials();
   }
-  final ApiService _apiService = ApiService(); // Correct instantiation
 
   // Text controllers to capture user inputs
   final TextEditingController emailController = TextEditingController();
@@ -20,11 +19,9 @@ class SignInProvider with ChangeNotifier {
   bool rememberMe = false;
 
   bool _isLoading = false;
-
   bool get isLoading => _isLoading;
 
   bool passVisible = true;
-
   bool get passwordVisible => passVisible;
 
   void passwordVisibility() {
@@ -80,14 +77,11 @@ class SignInProvider with ChangeNotifier {
     };
 
     try {
-      print('message11');
       // Call the reset password API
-      final responseData = await _apiService.postApiWithoutToken(
+      final responseData = await ApiService.postApiWithoutToken(
         NetworkConstantsUtil.login,
         params,
       );
-
-      print('message2');
 
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
@@ -102,10 +96,6 @@ class SignInProvider with ChangeNotifier {
         if (rememberMe) {
           await saveCredentials();
         }
-
-        // final current = await SharedPrefHelper.getBool("logged-in");
-        //
-        // print("Logged ID $current");
 
         // Handle success case
         final int otp = responseData['otp'] ?? 'Login successful!';

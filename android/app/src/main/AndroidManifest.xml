@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"
         android:maxSdkVersion="32" />
@@ -13,6 +14,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+
+        <!-- Background Task Service -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:permission="android.permission.BIND_JOB_SERVICE"
@@ -24,6 +27,7 @@
                 android:name="flutterEmbedding"
                 android:value="2" />
         </service>
+
 
         <activity
             android:name=".MainActivity"
@@ -66,7 +70,13 @@
             android:value="2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="high_importance_channel" />
+            android:value="default_channel" />
+
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+
+<!--            android:value="high_importance_channel" />-->
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and
