@@ -1,159 +1,88 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
-import 'package:o_deliver/providers/sigin_provider.dart';
-import 'package:o_deliver/screens/auth/forget_password.dart';
-import 'package:o_deliver/screens/auth/reset_password.dart';
-import 'package:o_deliver/screens/auth/signin.dart';
-import 'package:o_deliver/screens/auth/signup.dart';
-import 'package:o_deliver/screens/auth/verify_otp.dart';
-import 'package:o_deliver/screens/delivery/delivery_complete_screen.dart';
-import 'package:o_deliver/screens/delivery/delivery_detail_screen.dart';
-import 'package:o_deliver/screens/delivery/delivery_screen.dart';
-import 'package:o_deliver/screens/main_screen.dart';
-import 'package:o_deliver/screens/pickup/pickup_detail_screen.dart';
-import 'package:o_deliver/screens/splash_screen.dart';
+import 'package:o_deliver/providers/multi_provider_setup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'providers/deliveryScreen_provider.dart';
-import 'providers/forgetpassword_provider.dart';
-import 'providers/resetpassword_provider.dart';
-import 'providers/settings_provider.dart';
-import 'providers/signup_provider.dart';
-import 'providers/update_order_provider.dart';
-import 'providers/verifyOtp_provider.dart';
+import 'screens/auth/signin.dart';
+import 'screens/auth/signup.dart';
+import 'screens/auth/verify_otp.dart';
+import 'screens/auth/forget_password.dart';
+import 'screens/auth/reset_password.dart';
+import 'screens/main_screen.dart';
+import 'screens/delivery/delivery_screen.dart';
+import 'screens/delivery/delivery_detail_screen.dart';
+import 'screens/delivery/delivery_complete_screen.dart';
+import 'screens/no_connection_screen.dart';
+import 'screens/pickup/pickup_detail_screen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/update_order_screen.dart';
 import 'widgets/notificaiton_service_manager.dart';
 
-
 @pragma("vm:entry-point")
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
-
-  // Access FlutterLocalNotificationsPlugin
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
-  // Define actions for the background notification
-  const AndroidNotificationAction acceptAction = AndroidNotificationAction(
-    'accept', // Action ID
-    'Accept', // Button text
-  );
-
-  const AndroidNotificationAction declineAction = AndroidNotificationAction(
-    'decline', // Action ID
-    'Decline', // Button text
-  );
-
-  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-    'channel_id', // Match the channel ID defined in _createNotificationChannel
-    'Channel Name',
-    importance: Importance.high,
-    priority: Priority.high,
-    actions: [acceptAction, declineAction], // Add actions here
-  );
-
-  const NotificationDetails notificationDetails = NotificationDetails(
-    android: androidDetails,
-  );
-
-  // Show notification
-  await flutterLocalNotificationsPlugin.show(
-    0, // Notification ID
-    message.notification?.title ?? 'Background Notification',
-    message.notification?.body ?? 'You have a new notification',
-    notificationDetails,
-    payload: message.data['payload'],
-  );
 }
 
-
-// @pragma("vm:entry-point")
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//
-//   // await NotificationServiceManager().showNotification(
-//   //   title: message.notification?.title,
-//   //   body: message.notification?.body,
-//   //   payload: message.data['payload'],
-//   // );
-//
-//   // await Firebase.initializeApp();
-//  // NotificationServices().showNotification(message);
-//  //  print(message.notification!.title.toString());
-//
-//   print("Handling a background message: ${message.messageId}");
-//   print(message.data["actionButtons"]);
-//   print(message.notification!.title);
-//   print("Handling a background message: ${message.data["channel_id"]}");
-//   print("Handling a background message: ${message.data["title"]}");
-//   print("Handling a background message: ${message.data["body"]}");
-//
-//   // // Ensure necessary setups
-//   // await setupNotificationChannel(); // Define this to create notification channels
-//   // await showNotification(message); // Function to display the notification
-//
-// }
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // await Permission.notification.isDenied.then(
-  //         (value){
-  //       if(value){
-  //         Permission.notification.request();
-  //       }
-  //     }
-  // );
-
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Check connectivity
+  final connectivityResult = await Connectivity().checkConnectivity();
 
+  // Initialize Firebase if connected
+  if (connectivityResult.contains(ConnectivityResult.none)) {
+    print("No Internet Connection Available");
+  } else {
+    print('Internet is available, initializing Firebase...');
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    await requestPermissions();
+  }
 
-  await NotificationServiceManager().initialize();
-  await requestPermissions();
-  //  await initializeService();
-  runApp(const MyApp());
+  runApp(MyApp(
+    initialRoute: connectivityResult.contains(ConnectivityResult.none)
+        ? '/noConnectionScreen'
+        : '/splash',
+  ));
 }
 
 Future<void> requestPermissions() async {
   var status = await Permission.locationWhenInUse.status;
-  if(!status.isGranted){
+  if (!status.isGranted) {
     var status = await Permission.locationWhenInUse.request();
-    if(status.isGranted){
+    if (status.isGranted) {
       var status = await Permission.locationAlways.request();
-      if(status.isGranted){
+      if (status.isGranted) {
         //Do some stuff
-      }else{
+      } else {
         //Do another stuff
       }
-    }else{
+    } else {
       //The user deny the permission
     }
-    if(status.isPermanentlyDenied){
+    if (status.isPermanentlyDenied) {
       //When the user previously rejected the permission and select never ask again
       //Open the screen of settings
       bool res = await openAppSettings();
     }
-  }else{
+  } else {
     //In use is available, check the always in use
     var status = await Permission.locationAlways.status;
-    if(!status.isGranted){
+    if (!status.isGranted) {
       var status = await Permission.locationAlways.request();
-      if(status.isGranted){
+      if (status.isGranted) {
         //Do some stuff
-      }else{
+      } else {
         //Do another stuff
       }
-    }else{
+    } else {
       //previously available, do some stuff or nothing
     }
   }
@@ -168,72 +97,16 @@ Future<void> requestPermissions() async {
   }
 }
 
+class MyApp extends StatelessWidget {
+  final String initialRoute;
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({required this.initialRoute, super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    // requestLocationPermission();
-  }
-  //
-  // bool locationPermissionGranted = false;
-  // bool notificationPermissionGranted = false;
-  //
-  // Future<void> requestLocationPermission() async {
-  //   PermissionStatus status = await Permission.location.request();
-  //
-  //   if (status.isGranted) {
-  //     setState(() {
-  //       locationPermissionGranted = true;
-  //     });
-  //     print("Location permission granted");
-  //
-  //     await initializeService();
-  //
-  //     // After location permission is granted, request notification permission
-  //     requestNotificationPermission();
-  //   } else {
-  //     setState(() {
-  //       locationPermissionGranted = false;
-  //     });
-  //     print("Location permission denied");
-  //   }
-  // }
-  //
-  // // Function to request notification permission
-  // Future<void> requestNotificationPermission() async {
-  //   NotificationServices notificationServices = NotificationServices();
-  //   await notificationServices.getNotificationPermission();
-  //   setState(() {
-  //     notificationPermissionGranted = true;
-  //   });
-  //   print("Notification permission requested");
-  // }
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print(initialRoute);
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SignInProvider()),
-        ChangeNotifierProvider(create: (_) => SignUpProvider()),
-        ChangeNotifierProvider(create: (_) => VerifyOtpProvider()),
-        ChangeNotifierProvider(create: (_) => ForgetPasswordProvider()),
-        ChangeNotifierProvider(create: (_) => ResetPasswordProvider()),
-        ChangeNotifierProvider(create: (_) => DeliveryScreenProvider()),
-        ChangeNotifierProvider(create: (_) => UpdateOrderProvider()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()),
-      ],
+      providers: MultiProviderClass.providersList,
       child: MaterialApp.router(
         builder: EasyLoading.init(),
         title: 'Flutter Demo',
@@ -242,92 +115,76 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        routerConfig: router,
+        routerConfig: GoRouter(
+          initialLocation: initialRoute,
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/splash',
+              builder: (context, state) => const SplashScreen(),
+            ),
+            GoRoute(
+              path: '/signIn',
+              builder: (context, state) => const SignIn(),
+            ),
+            GoRoute(
+              path: '/signUp',
+              builder: (context, state) => const SignUp(),
+            ),
+            GoRoute(
+              path: '/verifyOtp/:emailText/:otp',
+              builder: (context, state) {
+                final emailText = state.pathParameters["emailText"] ?? "";
+                final otp = state.pathParameters["otp"] ?? "";
+                return VerifyOtp(emailText: emailText, otp: otp);
+              },
+            ),
+            GoRoute(
+              path: '/forgetPassword',
+              builder: (context, state) => const ForgetPassword(),
+            ),
+            GoRoute(
+              path: '/pages/authentication/reset-password-v1',
+              builder: (context, state) {
+                final token = state.uri.queryParameters['token'];
+                final email = state.uri.queryParameters['email'];
+                return ResetPassword(email: email, token: token);
+              },
+            ),
+            GoRoute(
+              path: '/mainScreen',
+              builder: (context, state) => const MainScreen(),
+            ),
+            GoRoute(
+              path: '/deliveryScreen',
+              builder: (context, state) => const DeliveryScreen(),
+            ),
+            GoRoute(
+              path: '/deliveryDetailScreen',
+              builder: (context, state) => const DeliveryDetailScreen(),
+            ),
+            GoRoute(
+              path: '/updateOrderScreen/:currentOrderId',
+              builder: (context, state) {
+                final currentOrderId =
+                    state.pathParameters["currentOrderId"] ?? "";
+                return UpdateOrderScreen(currentOrderId: currentOrderId);
+              },
+            ),
+            GoRoute(
+              path: '/deliveryCompleteScreen',
+              builder: (context, state) => const DeliveryCompleteScreen(),
+            ),
+            GoRoute(
+              path: '/pickupDetailScreen',
+              builder: (context, state) => const PickUpDetailScreen(),
+            ),
+            GoRoute(
+              path: '/noConnectionScreen',
+              builder: (context, state) => const ConnectivityHandler(),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-final GoRouter router = GoRouter(
-  initialLocation: '/splash',
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) {
-        return const SplashScreen();
-      },
-    ),
-    GoRoute(
-      path: '/signIn',
-      builder: (context, state) {
-        return const SignIn();
-      },
-    ),
-    GoRoute(
-      path: '/signUp',
-      builder: (context, state) {
-        return const SignUp();
-      },
-    ),
-    GoRoute(
-      path: '/verifyOtp/:emailText/:otp',
-      builder: (context, state) {
-        final String emailText = state.pathParameters["emailText"] ?? "";
-        final String otp = state.pathParameters["otp"] ?? "";
-        return VerifyOtp(emailText: emailText, otp: otp);
-      },
-    ),
-    GoRoute(
-      path: '/forgetPassword',
-      builder: (context, state) {
-        return const ForgetPassword();
-      },
-    ),
-    GoRoute(
-      path: '/pages/authentication/reset-password-v1',
-      builder: (context, state) {
-        final String? token = state.uri.queryParameters['token'];
-        final String? email = state.uri.queryParameters['email'];
-        return ResetPassword(email: email, token: token);
-      },
-    ),
-    GoRoute(
-      path: '/mainScreen',
-      builder: (context, state) {
-        return const MainScreen();
-      },
-    ),
-    GoRoute(
-      path: '/deliveryScreen',
-      builder: (context, state) {
-        return const DeliveryScreen();
-      },
-    ),
-    GoRoute(
-      path: '/deliveryDetailScreen',
-      builder: (context, state) {
-        return const DeliveryDetailScreen();
-      },
-    ),
-
-    GoRoute(
-      path: '/updateOrderScreen/:currentOrderId',
-      builder: (context, state) {
-        final String currentOrderId = state.pathParameters["currentOrderId"] ?? "";
-        return UpdateOrderScreen(currentOrderId: currentOrderId);
-      },
-    ),
-    GoRoute(
-      path: '/deliveryCompleteScreen',
-      builder: (context, state) {
-        return const DeliveryCompleteScreen();
-      },
-    ),
-    GoRoute(
-      path: '/pickupDetailScreen',
-      builder: (context, state) {
-        return const PickUpDetailScreen();
-      },
-    ),
-  ],
-);

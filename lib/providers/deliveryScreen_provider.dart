@@ -164,6 +164,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
 
     final Map<String, dynamic> params = {
       "on_duty": isSwitched! ? 1 : 0,
+      // "on_duty": 5.0,
     };
 
     try {
@@ -198,7 +199,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
       }
     } catch (e) {
       // changeDriverStatus(false);
-      print("Error: $e");
+      print("Error:mm $e");
       showCustomSnackBar(context, e.toString());
     } finally {
       // changeDriverStatus(false);

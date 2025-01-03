@@ -58,6 +58,5 @@ class ForgetPasswordProvider extends ChangeNotifier {
 
   void clearControllers() {
     emailController.clear();
-    super.dispose();
   }
 }

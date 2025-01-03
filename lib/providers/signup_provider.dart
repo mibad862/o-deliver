@@ -127,8 +127,8 @@ class SignUpProvider with ChangeNotifier {
   }
 
   int get loaderValue => selectedLoaderOption == "Yes" ? 1 : 0;
-  int get tailgateValue => selectedTailgateOption == "Yes" ? 1 : 0;
 
+  int get tailgateValue => selectedTailgateOption == "Yes" ? 1 : 0;
 
   void clearLoaderQuantity() {
     loaderQuantityController.clear();
@@ -325,54 +325,91 @@ class SignUpProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await ApiService.getApiWithoutToken(
+      final responseData = await ApiService.getApiWithoutToken(
         NetworkConstantsUtil.getAllData,
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
+      bool isSuccess = responseData['success'];
+      String message = responseData['message'];
 
-        // Check if the response indicates success
-        if (responseData['success']) {
-          // Extract cities from the response
-          final List<dynamic> cityData = responseData['data']['cities'];
-          _cities = cityData;
+      if (isSuccess) {
+        final List<dynamic> cityData = responseData['data']['cities'];
+        _cities = cityData;
 
-          final List<dynamic> organizationData =
-              responseData['data']['organizations'];
-          _organizations = organizationData;
+        final List<dynamic> organizationData =
+            responseData['data']['organizations'];
+        _organizations = organizationData;
 
-          final List<dynamic> vehiclesData =
-              responseData['data']['vehicle_types'];
-          _vehicles = vehiclesData;
+        final List<dynamic> vehiclesData =
+            responseData['data']['vehicle_types'];
+        _vehicles = vehiclesData;
 
-          final List<dynamic> servicesData =
-              responseData['data']['service_types'];
-          _services = servicesData;
+        final List<dynamic> servicesData =
+            responseData['data']['service_types'];
+        _services = servicesData;
 
-          final List<dynamic> shiftsData = responseData['data']['shifts'];
-          _shifts = shiftsData;
+        final List<dynamic> shiftsData = responseData['data']['shifts'];
+        _shifts = shiftsData;
 
-          final List<dynamic> areasData = responseData['data']['areas'];
-          _areas = areasData;
+        final List<dynamic> areasData = responseData['data']['areas'];
+        _areas = areasData;
 
-          final List<dynamic> daysData = responseData['data']['days'];
-          _days = daysData;
+        final List<dynamic> daysData = responseData['data']['days'];
+        _days = daysData;
 
-          final List<dynamic> colorsData = responseData['data']['colors'];
-          _colors = colorsData;
+        final List<dynamic> colorsData = responseData['data']['colors'];
+        _colors = colorsData;
 
-          print(_cities);
-          print("VEHICLES $_vehicles");
-          print("SERVICES $_services");
-          print("AREAS $_areas");
-          print("COLORS $_colors");
-          notifyListeners();
-        } else {
-          throw Exception('Failed to load cities: ${responseData['message']}');
-        }
+        print(_cities);
+        print("VEHICLES $_vehicles");
+        print("SERVICES $_services");
+        print("AREAS $_areas");
+        print("COLORS $_colors");
+        print(message);
+        notifyListeners();
+        // final Map<String, dynamic> responseData = jsonDecode(responseData.body);
+        //
+        // // Check if the responseData indicates success
+        // if (responseData['success']) {
+        //   // Extract cities from the responseData
+        //   final List<dynamic> cityData = responseData['data']['cities'];
+        //   _cities = cityData;
+        //
+        //   final List<dynamic> organizationData =
+        //       responseData['data']['organizations'];
+        //   _organizations = organizationData;
+        //
+        //   final List<dynamic> vehiclesData =
+        //       responseData['data']['vehicle_types'];
+        //   _vehicles = vehiclesData;
+        //
+        //   final List<dynamic> servicesData =
+        //       responseData['data']['service_types'];
+        //   _services = servicesData;
+        //
+        //   final List<dynamic> shiftsData = responseData['data']['shifts'];
+        //   _shifts = shiftsData;
+        //
+        //   final List<dynamic> areasData = responseData['data']['areas'];
+        //   _areas = areasData;
+        //
+        //   final List<dynamic> daysData = responseData['data']['days'];
+        //   _days = daysData;
+        //
+        //   final List<dynamic> colorsData = responseData['data']['colors'];
+        //   _colors = colorsData;
+        //
+        //   print(_cities);
+        //   print("VEHICLES $_vehicles");
+        //   print("SERVICES $_services");
+        //   print("AREAS $_areas");
+        //   print("COLORS $_colors");
+        //   notifyListeners();
+        // } else {
+        //   throw Exception('Failed to load cities: ${responseData['message']}');
+        // }
       } else {
-        throw Exception('Failed to load cities: ${response.body}');
+        throw Exception('Failed: $message');
       }
     } catch (e) {
       print("Error: $e");
@@ -449,13 +486,17 @@ class SignUpProvider with ChangeNotifier {
       request.fields['experience'] = drivingExperienceController.text;
       request.fields['dob'] = dobController.text;
       request.fields['delivery_radius'] = deliveryRadiusController.text;
-      request.fields['driver_agreement_contract'] = driverAgreementValue.toString();
-      request.fields['cash_liability_agreement'] = cashLiabilityValue.toString();
-      request.fields['available_days'] = selectedDays.join(','); // Convert list to comma-separated string
+      request.fields['driver_agreement_contract'] =
+          driverAgreementValue.toString();
+      request.fields['cash_liability_agreement'] =
+          cashLiabilityValue.toString();
+      request.fields['available_days'] =
+          selectedDays.join(','); // Convert list to comma-separated string
       request.fields['bank_name'] = bankNameController.text;
       request.fields['account_title'] = accountTitleController.text;
       request.fields['account_number'] = accountNumberController.text;
-      request.fields['driver_service_area_id'] = selectedAreas.join(','); // Convert list to comma-separated string
+      request.fields['driver_service_area_id'] =
+          selectedAreas.join(','); // Convert list to comma-separated string
       request.fields['shift_id'] = selectedShiftId.toString();
       request.fields['service_type_id'] = selectedServices.join(',');
       request.fields['license_plate'] = licensePlateController.text;

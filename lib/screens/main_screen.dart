@@ -15,18 +15,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  // NotificationServices notificationService = NotificationServices();
+  NotificationServices notificationService = NotificationServices();
   // LocationService locationService = LocationService();
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //
-  //   // locationService.requestLocationPermission();
-  //   notificationService.getNotificationPermission();
-  //   notificationService.firebaseInit(context);
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    // locationService.requestLocationPermission();
+    notificationService.getNotificationPermission();
+    notificationService.firebaseInit(context);
+  }
 
   // Future<void> _requestPermissions() async {
   //   // Request location permission
