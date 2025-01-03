@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:o_deliver/providers/deliveryScreen_provider.dart';
 import 'package:o_deliver/shared_pref_helper.dart';
 import 'package:provider/provider.dart';
@@ -15,10 +16,9 @@ class DeliveryScreen extends StatefulWidget {
 }
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
-  @override
+
   @override
   Widget build(BuildContext context) {
-    String? text = 'Start Service';
     print("Rebuilding");
     return Scaffold(
       appBar: AppBar(
@@ -72,7 +72,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               children: [
                 TabBar(
                   tabs: [
-                    Text("Assigned Orders"),
+                    Text("Instant Delivery"),
                     Text("Picked Up Orders"),
                   ],
                 )
@@ -81,36 +81,74 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           ),
           body: TabBarView(
             children: [
+
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
-                  return provider.assignedOrders.isEmpty
-                      ? const Center(child: Text("No Assigned Orders Found"))
+                  return provider.driverAllOrders.isEmpty
+                      ? Center(child: Text(provider.orderStatus))
                       : ListView.builder(
-                          itemCount: provider.assignedOrders.length,
-                          itemBuilder: (context, index) {
-                            final currentItem = provider.assignedOrders[index];
+                    itemCount: provider.driverAllOrders.length,
+                    itemBuilder: (context, index) {
+                      final currentItem = provider.driverAllOrders[index];
 
-                            return InkWell(
-                              onTap: () {
-                                context.push(
-                                    "/updateOrderScreen/${currentItem["id"]}");
-                              },
-                              child: DeliveryCard(
-                                applicationId: currentItem["order_id"],
-                                status: currentItem["order_status"].toString(),
-                                fromCity: currentItem["from_city"],
-                                toCity: currentItem["to_city"],
-                                date: '2020/03/27 - 09:00',
-                                goodsType: 'Vegetable',
-                                vehicleType: currentItem["pro_type"],
-                                weight: currentItem["weight"].toString(),
-                                price: currentItem["package_amt"].toDouble(),
-                              ),
-                            );
-                          },
-                        );
+                      final createdAt = currentItem["created_at"];
+                      final formattedDate = DateFormat('MMM d, yyyy').format(
+                        DateTime.parse(createdAt),
+                      );
+
+                      return InkWell(
+                        onTap: () {
+                          context.push(
+                              "/updateOrderScreen/${currentItem["id"]}");
+                        },
+                        child: DeliveryCard(
+                          orderId: currentItem["order_id"],
+                          status: currentItem["order_status"].toString(),
+                          fromCity: currentItem["from_city"],
+                          toCity: currentItem["to_city"],
+                          date: formattedDate,
+                          goodsType: currentItem["pro_type"],
+                          fromName: currentItem["from_name"],
+                          toName: currentItem["to_name"],
+                          weight: currentItem["weight"].toString(),
+                          price: currentItem["package_amt"].toDouble(),
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
+
+              // Consumer<DeliveryScreenProvider>(
+              //   builder: (context, provider, child) {
+              //     return provider.assignedOrders.isEmpty
+              //         ? const Center(child: Text("No Assigned Orders Found"))
+              //         : ListView.builder(
+              //             itemCount: provider.assignedOrders.length,
+              //             itemBuilder: (context, index) {
+              //               final currentItem = provider.assignedOrders[index];
+              //
+              //               return InkWell(
+              //                 onTap: () {
+              //                   context.push(
+              //                       "/updateOrderScreen/${currentItem["id"]}");
+              //                 },
+              //                 child: DeliveryCard(
+              //                   applicationId: currentItem["order_id"],
+              //                   status: currentItem["order_status"].toString(),
+              //                   fromCity: currentItem["from_city"],
+              //                   toCity: currentItem["to_city"],
+              //                   date: '2020/03/27 - 09:00',
+              //                   goodsType: 'Vegetable',
+              //                   vehicleType: currentItem["pro_type"],
+              //                   weight: currentItem["weight"].toString(),
+              //                   price: currentItem["package_amt"].toDouble(),
+              //                 ),
+              //               );
+              //             },
+              //           );
+              //   },
+              // ),
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
                   return provider.pickedUpOrders.isEmpty
@@ -126,13 +164,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     "/updateOrderScreen/${currentItem["id"]}");
                               },
                               child: DeliveryCard(
-                                applicationId: currentItem["order_id"],
+                                orderId: currentItem["order_id"],
                                 status: currentItem["order_status"].toString(),
                                 fromCity: currentItem["from_city"],
                                 toCity: currentItem["to_city"],
                                 date: '2020/03/27 - 09:00',
                                 goodsType: 'Vegetable',
-                                vehicleType: currentItem["pro_type"],
+                                toName: "hey",
+                                fromName: "hello",
                                 weight: currentItem["weight"].toString(),
                                 price: currentItem["package_amt"].toDouble(),
                               ),
@@ -145,33 +184,6 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           ),
         ),
       ),
-      // body: Consumer<DeliveryScreenProvider>(
-      //   builder: (context, provider, child) {
-      //     return ListView.builder(
-      //       itemCount: provider.orders.length,
-      //       itemBuilder: (context, index) {
-      //         final currentItem = provider.orders[index];
-      //
-      //         return InkWell(
-      //           onTap: () {
-      //             // context.push('/deliveryDetailScreen');
-      //           },
-      //           child: DeliveryCard(
-      //             applicationId: currentItem["order_id"],
-      //             status: currentItem["order_status"].toString(),
-      //             fromCity: currentItem["from_city"],
-      //             toCity: currentItem["to_city"],
-      //             date: '2020/03/27 - 09:00',
-      //             goodsType: 'Vegetable',
-      //             vehicleType: currentItem["pro_type"],
-      //             weight: currentItem["weight"].toString(),
-      //             price: currentItem["package_amt"].toDouble(),
-      //           ),
-      //         );
-      //       },
-      //     );
-      //   },
-      // ),
     );
   }
 }

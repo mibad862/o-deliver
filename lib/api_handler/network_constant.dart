@@ -19,6 +19,7 @@ class NetworkConstantsUtil {
   static String pickedUpOrders = 'driver/fetch_driver_pickup_closest_orders';
   static String assignedOrders = 'driver/fetch_driver_assigned_closest_orders';
   static String updateOrder = 'driver/order-status';
+  static String fetchAllOrders = 'driver/fetch_driver_orders';
   static String vehicles = 'driver/vehicles';
   static String resendOTP = 'driver/resend-otp';
   static String logout = 'driver/logout/';

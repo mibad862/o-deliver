@@ -11,14 +11,14 @@ class ApiService {
   // Stream to listen for connectivity changes
   late StreamSubscription internetConnectionStreamSubscription;
 
-  ApiService() {
-    internetConnectionStreamSubscription = InternetConnection().onStatusChange.listen((status) {
-      final isConnected = status == InternetStatus.connected;
-      setState(() {
-        isConnectedToInternet = isConnected;
-      });
-    });
-  }
+  // ApiService() {
+  //   internetConnectionStreamSubscription = InternetConnection().onStatusChange.listen((status) {
+  //     final isConnected = status == InternetStatus.connected;
+  //     setState(() {
+  //       isConnectedToInternet = isConnected;
+  //     });
+  //   });
+  // }
 
 
   static Future<Map<String, dynamic>> postApiWithoutToken(

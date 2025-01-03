@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import '../api_handler/api_wrapper.dart';
 import '../api_handler/network_constant.dart';
 import '../shared_pref_helper.dart';
@@ -7,18 +8,23 @@ import '../util/snackbar_util.dart';
 class DeliveryScreenProvider extends ChangeNotifier {
   DeliveryScreenProvider() {
     _initializeDriverStatus();
-    driverAssignedOrders();
+    fetchAllOrders();
+    // driverAssignedOrders();
     driverPickedUpOrders();
   }
 
   bool? isSwitched = false;
-  bool _isLoading = false;
+
+  String orderStatus = "";
 
   List<dynamic> _pickedUpOrders = [];
   List<dynamic> get pickedUpOrders => _pickedUpOrders;
 
   List<dynamic> _assignedOrders = [];
   List<dynamic> get assignedOrders => _assignedOrders;
+
+  List<dynamic> _driverAllOrders = [];
+  List<dynamic> get driverAllOrders => _driverAllOrders;
 
 
   void changeDriverStatus(bool value) {
@@ -32,7 +38,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
   }
 
   Future<void> driverPickedUpOrders() async {
-    _isLoading = true;
     notifyListeners();
 
     // Retrieve the Bearer token from shared preferences
@@ -68,13 +73,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
         print(_pickedUpOrders);
         print(message);
 
-        // changeDriverStatus(true);
-
-        // print(orders);
-        // print(isSuccess);
-        // context.go('/mainScreen');
       } else {
-        // changeDriverStatus(false);
         // Handle error case
         print(message);
       }
@@ -84,13 +83,11 @@ class DeliveryScreenProvider extends ChangeNotifier {
       // print(e.toString());
     } finally {
       // changeDriverStatus(false);
-      _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> driverAssignedOrders() async {
-    _isLoading = true;
     notifyListeners();
 
     // Retrieve the Bearer token from shared preferences
@@ -112,7 +109,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
         accessToken,
       );
 
-      // print('Sending request to update driver status...');
 
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
@@ -131,6 +127,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
         // print(orders);
         // print(isSuccess);
         // context.go('/mainScreen');
+        notifyListeners();
       } else {
         // changeDriverStatus(false);
         // Handle error case
@@ -143,13 +140,69 @@ class DeliveryScreenProvider extends ChangeNotifier {
       // print(e.toString());
     } finally {
       // changeDriverStatus(false);
-      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchAllOrders() async {
+    // _isLoading = true;
+    // notifyListeners();
+
+    EasyLoading.show(status: "Loading Driver Orders");
+
+    // Retrieve the Bearer token from shared preferences
+    String? accessToken = await SharedPrefHelper.getString('access-token');
+    int? driverId = await SharedPrefHelper.getInt('driver-id');
+
+    if (accessToken == null || driverId == null) {
+      print("Access token or driver ID is null");
+      print("Error: Missing authentication data");
+      return;
+    }
+
+    try {
+      print('Fetching Driver All Orders');
+
+      // Call the API with the Bearer token in the headers
+      final responseData = await ApiService.getApiWithToken(
+        "${NetworkConstantsUtil.fetchAllOrders}/$driverId", // API endpoint
+        accessToken,
+      );
+
+      // print('Sending request to update driver status...');
+
+      bool isSuccess = responseData['success'];
+      String message = responseData['message'];
+      // String orders = responseData['orders'];
+
+      if (isSuccess) {
+        print("DRIVER ID $driverId");
+
+        _driverAllOrders = responseData['orders'];
+
+        orderStatus = message;
+
+        print(_pickedUpOrders);
+        print(message);
+
+      } else {
+        // Handle error case
+        orderStatus = message;
+        print(message);
+      }
+    } catch (e) {
+      // changeDriverStatus(false);
+      print("Error: $e");
+      // print(e.toString());
+    } finally {
+      EasyLoading.dismiss();
+      // changeDriverStatus(false);
+      // _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> updateDriverStatus(BuildContext context) async {
-    _isLoading = true;
     notifyListeners();
 
     // Retrieve the Bearer token from shared preferences
@@ -203,21 +256,18 @@ class DeliveryScreenProvider extends ChangeNotifier {
       showCustomSnackBar(context, e.toString());
     } finally {
       // changeDriverStatus(false);
-      _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> updateOrderStatus(BuildContext context) async {
-    _isLoading = true;
     notifyListeners();
 
     // Retrieve the Bearer token from shared preferences
-    String? accessToken = await SharedPrefHelper.getString('access-token');
     int? driverId = await SharedPrefHelper.getInt('driver-id');
 
-    if (accessToken == null || driverId == null) {
-      print("Access token or driver ID is null");
+    if (driverId == null) {
+      print("Driver ID is null");
       showCustomSnackBar(context, "Error: Missing authentication data");
       return;
     }
@@ -262,7 +312,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
       showCustomSnackBar(context, e.toString());
     } finally {
       // changeDriverStatus(false);
-      _isLoading = false;
       notifyListeners();
     }
   }
