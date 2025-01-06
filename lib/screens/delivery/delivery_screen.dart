@@ -16,7 +16,12 @@ class DeliveryScreen extends StatefulWidget {
 }
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
-
+  @override
+  void initState() {
+    super.initState();
+    // Fetch all orders when the screen loads
+    Provider.of<DeliveryScreenProvider>(context, listen: false).fetchAllOrders();
+  }
   @override
   Widget build(BuildContext context) {
     print("Rebuilding");
@@ -72,8 +77,8 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               children: [
                 TabBar(
                   tabs: [
+                    Text("Hub & Spoke"),
                     Text("Instant Delivery"),
-                    Text("Picked Up Orders"),
                   ],
                 )
               ],
@@ -81,82 +86,60 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           ),
           body: TabBarView(
             children: [
-
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
-                  return provider.driverAllOrders.isEmpty
+                  return provider.hubAndSpokeOrders.isEmpty
                       ? Center(child: Text(provider.orderStatus))
                       : ListView.builder(
-                    itemCount: provider.driverAllOrders.length,
-                    itemBuilder: (context, index) {
-                      final currentItem = provider.driverAllOrders[index];
+                          itemCount: provider.hubAndSpokeOrders.length,
+                          itemBuilder: (context, index) {
+                            final currentItem = provider.hubAndSpokeOrders[index];
 
-                      final createdAt = currentItem["created_at"];
-                      final formattedDate = DateFormat('MMM d, yyyy').format(
-                        DateTime.parse(createdAt),
-                      );
+                            final createdAt = currentItem["created_at"];
+                            final formattedDate =
+                                DateFormat('MMM d, yyyy').format(
+                              DateTime.parse(createdAt),
+                            );
 
-                      return InkWell(
-                        onTap: () {
-                          context.push(
-                              "/updateOrderScreen/${currentItem["id"]}");
-                        },
-                        child: DeliveryCard(
-                          orderId: currentItem["order_id"],
-                          status: currentItem["order_status"].toString(),
-                          fromCity: currentItem["from_city"],
-                          toCity: currentItem["to_city"],
-                          date: formattedDate,
-                          goodsType: currentItem["pro_type"],
-                          fromName: currentItem["from_name"],
-                          toName: currentItem["to_name"],
-                          weight: currentItem["weight"].toString(),
-                          price: currentItem["package_amt"].toDouble(),
-                        ),
-                      );
-                    },
-                  );
+                            return InkWell(
+                              onTap: () {
+                                context.push(
+                                  "/updateOrderScreen/${currentItem["id"]}",
+                                  extra: currentItem
+                                );
+                              },
+                              child: DeliveryCard(
+                                orderLat:
+                                    double.parse(currentItem["to_latitude"]),
+                                orderLng:
+                                    double.parse(currentItem["to_longitude"]),
+                                orderId: currentItem["order_id"],
+                                status: currentItem["has_order_status"]["name"],
+                                fromCity: currentItem["from_city"],
+                                toCity: currentItem["to_city"],
+                                date: formattedDate,
+                                goodsType: currentItem["pro_type"],
+                                organizationName: currentItem["organization_id"],
+                                deliveryType: currentItem["delivery_type"],
+                                weight: currentItem["weight"].toString(),
+                                price: currentItem["package_amt"].toDouble(),
+                                itemCost: currentItem["item_cost"],
+                              ),
+                            );
+                          },
+                        );
                 },
               ),
 
-              // Consumer<DeliveryScreenProvider>(
-              //   builder: (context, provider, child) {
-              //     return provider.assignedOrders.isEmpty
-              //         ? const Center(child: Text("No Assigned Orders Found"))
-              //         : ListView.builder(
-              //             itemCount: provider.assignedOrders.length,
-              //             itemBuilder: (context, index) {
-              //               final currentItem = provider.assignedOrders[index];
-              //
-              //               return InkWell(
-              //                 onTap: () {
-              //                   context.push(
-              //                       "/updateOrderScreen/${currentItem["id"]}");
-              //                 },
-              //                 child: DeliveryCard(
-              //                   applicationId: currentItem["order_id"],
-              //                   status: currentItem["order_status"].toString(),
-              //                   fromCity: currentItem["from_city"],
-              //                   toCity: currentItem["to_city"],
-              //                   date: '2020/03/27 - 09:00',
-              //                   goodsType: 'Vegetable',
-              //                   vehicleType: currentItem["pro_type"],
-              //                   weight: currentItem["weight"].toString(),
-              //                   price: currentItem["package_amt"].toDouble(),
-              //                 ),
-              //               );
-              //             },
-              //           );
-              //   },
-              // ),
               Consumer<DeliveryScreenProvider>(
                 builder: (context, provider, child) {
-                  return provider.pickedUpOrders.isEmpty
-                      ? const Center(child: Text("No Picked Up Orders Found"))
+                  return provider.instantDeliveryOrders.isEmpty
+                      ? const Center(
+                          child: Text("No Instant Delivery Orders Found"))
                       : ListView.builder(
-                          itemCount: provider.pickedUpOrders.length,
+                          itemCount: provider.instantDeliveryOrders.length,
                           itemBuilder: (context, index) {
-                            final currentItem = provider.pickedUpOrders[index];
+                            final currentItem = provider.instantDeliveryOrders[index];
 
                             return InkWell(
                               onTap: () {
@@ -164,16 +147,19 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     "/updateOrderScreen/${currentItem["id"]}");
                               },
                               child: DeliveryCard(
+                                orderLng: 1.0,
+                                orderLat: 1.0,
                                 orderId: currentItem["order_id"],
-                                status: currentItem["order_status"].toString(),
+                                status: currentItem["has_order_status"]["name"],
                                 fromCity: currentItem["from_city"],
                                 toCity: currentItem["to_city"],
                                 date: '2020/03/27 - 09:00',
                                 goodsType: 'Vegetable',
-                                toName: "hey",
-                                fromName: "hello",
+                                deliveryType: "hey",
+                                organizationName: "hello",
                                 weight: currentItem["weight"].toString(),
                                 price: currentItem["package_amt"].toDouble(),
+                                itemCost: currentItem["item_cost"],
                               ),
                             );
                           },

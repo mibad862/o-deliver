@@ -82,6 +82,7 @@ class NotificationServices {
       print("TITLE ${message.data['title']}");
       print("TITLE ${message.data['name']}");
       print("TITLE ${message.data['channel_id']}");
+      print("TITLE ${message.data['orderId']}");
       // print(message.data['orderId']);
 
       print(message.notification!.title);

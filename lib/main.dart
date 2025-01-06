@@ -167,7 +167,11 @@ class MyApp extends StatelessWidget {
               builder: (context, state) {
                 final currentOrderId =
                     state.pathParameters["currentOrderId"] ?? "";
-                return UpdateOrderScreen(currentOrderId: currentOrderId);
+                final currentItem = state.extra as Map<String, dynamic>;
+                return UpdateOrderScreen(
+                  currentOrderId: currentOrderId,
+                  currentItem: currentItem,
+                );
               },
             ),
             GoRoute(

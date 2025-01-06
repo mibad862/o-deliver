@@ -10,21 +10,19 @@ class DeliveryScreenProvider extends ChangeNotifier {
     _initializeDriverStatus();
     fetchAllOrders();
     // driverAssignedOrders();
-    driverPickedUpOrders();
+    // driverPickedUpOrders();
   }
 
   bool? isSwitched = false;
 
   String orderStatus = "";
 
-  List<dynamic> _pickedUpOrders = [];
-  List<dynamic> get pickedUpOrders => _pickedUpOrders;
+  List<dynamic> _hubAndSpokeOrders = [];
+  List<dynamic> get hubAndSpokeOrders => _hubAndSpokeOrders;
 
-  List<dynamic> _assignedOrders = [];
-  List<dynamic> get assignedOrders => _assignedOrders;
+  List<dynamic> _instantDeliveryOrders = [];
+  List<dynamic> get instantDeliveryOrders => _instantDeliveryOrders;
 
-  List<dynamic> _driverAllOrders = [];
-  List<dynamic> get driverAllOrders => _driverAllOrders;
 
 
   void changeDriverStatus(bool value) {
@@ -37,112 +35,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
     notifyListeners(); // Notify UI after fetching the value
   }
 
-  Future<void> driverPickedUpOrders() async {
-    notifyListeners();
-
-    // Retrieve the Bearer token from shared preferences
-    String? accessToken = await SharedPrefHelper.getString('access-token');
-    int? driverId = await SharedPrefHelper.getInt('driver-id');
-
-    if (accessToken == null || driverId == null) {
-      print("Access token or driver ID is null");
-      print("Error: Missing authentication data");
-      return;
-    }
-
-    try {
-      print('Sending request to update driver status...');
-
-      // Call the API with the Bearer token in the headers
-      final responseData = await ApiService.getApiWithToken(
-        "${NetworkConstantsUtil.pickedUpOrders}/$driverId", // API endpoint
-        accessToken,
-      );
-
-      // print('Sending request to update driver status...');
-
-      bool isSuccess = responseData['success'];
-      String message = responseData['message'];
-      // String orders = responseData['orders'];
-
-      if (isSuccess) {
-        print("DRIVER ID $driverId");
-
-        _pickedUpOrders = responseData['orders'];
-
-        print(_pickedUpOrders);
-        print(message);
-
-      } else {
-        // Handle error case
-        print(message);
-      }
-    } catch (e) {
-      // changeDriverStatus(false);
-      print("Error: $e");
-      // print(e.toString());
-    } finally {
-      // changeDriverStatus(false);
-      notifyListeners();
-    }
-  }
-
-  Future<void> driverAssignedOrders() async {
-    notifyListeners();
-
-    // Retrieve the Bearer token from shared preferences
-    String? accessToken = await SharedPrefHelper.getString('access-token');
-    int? driverId = await SharedPrefHelper.getInt('driver-id');
-
-    if (accessToken == null || driverId == null) {
-      print("Access token or driver ID is null");
-      print("Error: Missing authentication data");
-      return;
-    }
-
-    try {
-
-
-      // Call the API with the Bearer token in the headers
-      final responseData = await ApiService.getApiWithToken(
-        "${NetworkConstantsUtil.assignedOrders}/$driverId", // API endpoint
-        accessToken,
-      );
-
-
-      bool isSuccess = responseData['success'];
-      String message = responseData['message'];
-      // String orders = responseData['orders'];
-
-      if (isSuccess) {
-        print("DRIVER ID $driverId");
-
-        _assignedOrders = responseData['orders'];
-
-        print(_assignedOrders);
-        print(message);
-
-        // changeDriverStatus(true);
-
-        // print(orders);
-        // print(isSuccess);
-        // context.go('/mainScreen');
-        notifyListeners();
-      } else {
-        // changeDriverStatus(false);
-        // Handle error case
-        print(_assignedOrders);
-        print(message);
-      }
-    } catch (e) {
-      // changeDriverStatus(false);
-      print("Error: $e");
-      // print(e.toString());
-    } finally {
-      // changeDriverStatus(false);
-      notifyListeners();
-    }
-  }
 
   Future<void> fetchAllOrders() async {
     // _isLoading = true;
@@ -178,11 +70,12 @@ class DeliveryScreenProvider extends ChangeNotifier {
       if (isSuccess) {
         print("DRIVER ID $driverId");
 
-        _driverAllOrders = responseData['orders'];
+        _hubAndSpokeOrders = responseData['orders']["HubAndSpoke"];
+        _instantDeliveryOrders = responseData['orders']["InstantDelivery"];
 
         orderStatus = message;
 
-        print(_pickedUpOrders);
+        print(_hubAndSpokeOrders);
         print(message);
 
       } else {
