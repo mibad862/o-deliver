@@ -60,11 +60,11 @@ class _SuccessAndUnsuccessfulScreenState
   // Update order by making an API request
   Future<void> updateOrder(
       BuildContext context, String currentOrderId, String orderStatus) async {
-    EasyLoading.show(status: 'Updating Order');
+    EasyLoading.show(status: 'Updating the order');
 
     // Check if multimedia photo has been selected
     if (multimediaPhoto == null) {
-      showCustomSnackBar(context, "Please upload a multimedia photo.");
+      showCustomSnackBar(context, "Please upload the image.");
       EasyLoading.dismiss();
       return;
     }
@@ -139,110 +139,115 @@ class _SuccessAndUnsuccessfulScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: Form(
           key: formKey,
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Show multimedia photo picker if the order status is "6" or "7"
-            if (widget.currentOrderStatus == "6" ||
-                widget.currentOrderStatus == "7")
-              GestureDetector(
-                onTap: () => pickMultimediaPhoto((XFile image) {
-                  multimediaPhoto = image;
-                }),
-                child: multimediaPhoto != null
-                    ? Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            File(multimediaPhoto!.path),
-                            height: 150,
-                            width: 150,
-                            fit: BoxFit.cover,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+              // Show multimedia photo picker if the order status is "6" or "7"
+              if (widget.currentOrderStatus == "6" ||
+                  widget.currentOrderStatus == "7")
+                GestureDetector(
+                  onTap: () => pickMultimediaPhoto((XFile image) {
+                    multimediaPhoto = image;
+                  }),
+                  child: multimediaPhoto != null
+                      ? Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              File(multimediaPhoto!.path),
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                      )
-                    : DottedBorder(
-                        color: Colors.grey,
-                        strokeWidth: 2,
-                        borderType: BorderType.RRect,
-                        radius: const Radius.circular(12),
-                        dashPattern: const [5, 5],
-                        child: const SizedBox(
-                          width: double.infinity,
-                          height: 80,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_photo_alternate_outlined,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                "Upload Profile Image",
-                                style: TextStyle(
-                                  fontSize: 16,
+                        )
+                      : DottedBorder(
+                          color: Colors.grey,
+                          strokeWidth: 2,
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(12),
+                          dashPattern: const [5, 5],
+                          child: const SizedBox(
+                            width: double.infinity,
+                            height: 80,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 40,
                                   color: Colors.grey,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 8),
+                                Text(
+                                  "Upload Image",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-              ),
-            const SizedBox(height: 20),
+                ),
+              const SizedBox(height: 20),
 
-            // Show text fields for "Reason Update" and "Attempt Validation" if order status is "7"
-            if (widget.currentOrderStatus == "7")
-              CustomTextField(
-                controller: reasonUpdateController,
-                hintText: "Reason Update",
-                prefixIcon: const Icon(Icons.e_mobiledata),
-                validate: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter reason update';
-                  }
-                  return null;
-                },
-              ),
-            const SizedBox(height: 10),
-            if (widget.currentOrderStatus == "7")
-              CustomTextField(
-                controller: attemptValidationController,
-                hintText: "Attempt Validation",
-                prefixIcon: const Icon(Icons.e_mobiledata),
-                validate: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter attempt validation';
-                  }
-                  return null;
-                },
-              ),
+              // Show text fields for "Reason Update" and "Attempt Validation" if order status is "7"
+              if (widget.currentOrderStatus == "7")
+                CustomTextField(
+                  controller: reasonUpdateController,
+                  hintText: "Reason Update",
+                  prefixIcon: const Icon(Icons.e_mobiledata),
+                  validate: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter the reason';
+                    }
+                    return null;
+                  },
+                ),
+              const SizedBox(height: 10),
+              if (widget.currentOrderStatus == "7")
+                CustomTextField(
+                  controller: attemptValidationController,
+                  hintText: "Attempt Validation",
+                  prefixIcon: const Icon(Icons.e_mobiledata),
+                  validate: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter the attempt validation';
+                    }
+                    return null;
+                  },
+                ),
+              SizedBox(height: 10),
 
-            // "Arrived" button to update the order
-            CustomButton(
-              onTap: () {
-                if(widget.currentOrderStatus == "7"){
-                  if (formKey.currentState!.validate()) {
+              // "Arrived" button to update the order
+              CustomButton(
+                onTap: () {
+                  if(widget.currentOrderStatus == "7"){
+                    if (formKey.currentState!.validate()) {
+                      updateOrder(context, widget.currentOrderId, widget.currentOrderStatus);
+                    }
+                  }else{
                     updateOrder(context, widget.currentOrderId, widget.currentOrderStatus);
                   }
-                }else{
-                  updateOrder(context, widget.currentOrderId, widget.currentOrderStatus);
-                }
-              },
-              buttonText: widget.currentOrderStatus == "6"
-                  ? "Successful"
-                  : "UnSuccessful",
-              sizeWidth: double.infinity,
-              borderRadius: 30,
-              buttonColor: const Color(0xfff34147),
-            ),
-          ],
-        )),
+                },
+                buttonText: widget.currentOrderStatus == "6"
+                    ? "Successful"
+                    : "Unsuccessful",
+                sizeWidth: double.infinity,
+                borderRadius: 30,
+                buttonColor: const Color(0xfff34147),
+              ),
+                        ],
+                      ),
+            )),
       ),
     );
   }

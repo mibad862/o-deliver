@@ -40,7 +40,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
     // _isLoading = true;
     // notifyListeners();
 
-    EasyLoading.show(status: "Loading Driver Orders");
+    EasyLoading.show(status: "Loading...");
 
     // Retrieve the Bearer token from shared preferences
     String? accessToken = await SharedPrefHelper.getString('access-token');

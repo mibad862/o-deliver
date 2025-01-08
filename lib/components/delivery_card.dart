@@ -135,7 +135,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -205,9 +204,6 @@ class DeliveryCard extends StatelessWidget {
     );
   }
 
-
-
-
   Future<void> _openMapLauncher() async {
     try {
       // Fetch current location
@@ -219,8 +215,8 @@ class DeliveryCard extends StatelessWidget {
         await MapLauncher.showDirections(
           mapType: MapType.google,
           // origin: Coords(driverLat, driverLng),
-          origin: Coords(10.6552566,-61.5042452),
-           destination: Coords(orderLat, orderLng),
+          origin: Coords(10.6552566, -61.5042452),
+          destination: Coords(orderLat, orderLng),
           //destination: Coords(24.86226886600727, 67.06396208672919),
           directionsMode: DirectionsMode.driving,
         );
@@ -252,7 +248,7 @@ class DeliveryCard extends StatelessWidget {
                 ),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: status == 'Canceled'
                         ? Colors.blue
@@ -308,30 +304,36 @@ class DeliveryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Packaged Amount',
-                    style: TextStyle(color: Colors.grey)),
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    '\$$price',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
+                const Text('Package Amount: '),
+                Text(
+                  '\$$price',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ],
             ),
             const SizedBox(height: 5),
-            CustomButton(
-              sizeHeight: 30,
-              onTap: _openMapLauncher,
-              buttonText: "Direction",
-              sizeWidth: 100,
+            SizedBox(
+              height: 30,
+              width: 130,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.appThemeColor
+                ),
+                onPressed: _openMapLauncher,
+                label: Text("Direction", style: TextStyle(color: Colors.white)),
+                icon: Icon(Icons.directions, color: Colors.white),
+              ),
             ),
+            // CustomButton(
+            //   sizeHeight: 30,
+            //   onTap: _openMapLauncher,
+            //   buttonText: "Direction",
+            //   sizeWidth: 100,
+            // ),
           ],
         ),
       ),
     );
   }
 }
-
-

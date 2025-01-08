@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/api_handler/api_wrapper.dart';
 import '../api_handler/network_constant.dart';
@@ -8,17 +10,19 @@ import '../util/snackbar_util.dart';
 class SettingsProvider extends ChangeNotifier {
 
 
-  bool _isLoading = false;
-
   void clearStoredValues() async {
     // await SharedPrefHelper.clearAll();
     await SharedPrefHelper.removeKey("access-token");
     await SharedPrefHelper.removeKey("driver-id");
+    await SharedPrefHelper.removeKey("user-online");
   }
 
   Future<void> logoutUser(BuildContext context) async {
-    _isLoading = true;
-    notifyListeners();
+    EasyLoading.show(
+      status: "Logging Out..."
+    );
+    // _isLoading = true;
+    // notifyListeners();
 
     // final Map<String, dynamic> params = {
     //   "email": emailText,
@@ -47,6 +51,12 @@ class SettingsProvider extends ChangeNotifier {
       print(message);
 
       if (isSuccess) {
+
+        final service = FlutterBackgroundService();
+        if (await service.isRunning()) {
+          service.invoke('stopService');
+        }
+
         // // Handle success case
         //
         // final accessToken = responseData['accessToken'];
@@ -66,8 +76,9 @@ class SettingsProvider extends ChangeNotifier {
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      EasyLoading.dismiss();
+      // _isLoading = false;
+      // notifyListeners();
     }
   }
 }

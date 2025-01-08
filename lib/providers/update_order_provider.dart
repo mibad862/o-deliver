@@ -95,7 +95,7 @@ class UpdateOrderProvider extends ChangeNotifier {
 
   Future<void> updateOrder(
       BuildContext context, String currentOrderId, String orderStatus) async {
-    EasyLoading.show(status: "Updating Order...");
+    EasyLoading.show(status: "Updating the order");
 
     final currentDriverId = await SharedPrefHelper.getInt("driver-id");
         if (currentDriverId == null) {

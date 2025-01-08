@@ -21,6 +21,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     print("Rebuilding Delivery Screen");
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text('Delivery'),
           actions: [
             Consumer<DeliveryScreenProvider>(
@@ -63,6 +64,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           length: 2,
           child: Scaffold(
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               flexibleSpace: const Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
