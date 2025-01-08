@@ -44,7 +44,8 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     if (value) {
                       // Start the background service only if not already running
                       if (!(await service.isRunning())) {
-                        await service.startService(); // Explicitly start the service
+                        await service
+                            .startService(); // Explicitly start the service
                       }
                     } else {
                       // Stop the background service
@@ -76,7 +77,6 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
             ),
             body: TabBarView(
               children: [
-
                 Consumer<DeliveryScreenProvider>(
                   builder: (context, provider, child) {
                     return RefreshIndicator(
@@ -84,53 +84,60 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                         await provider.fetchAllOrders();
                       },
                       child: provider.hubAndSpokeOrders.isEmpty
-                          ? Center(child: Text(provider.orderStatus))
+                          ? SingleChildScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              child: SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                child: Center(
+                                  child: Text(provider.orderStatus),
+                                ),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: provider.hubAndSpokeOrders.length,
-                        itemBuilder: (context, index) {
-                          final currentItem =
-                          provider.hubAndSpokeOrders[index];
-                          final createdAt = currentItem["created_at"];
-                          final formattedDate =
-                          DateFormat('MMM d, yyyy').format(
-                            DateTime.parse(createdAt),
-                          );
+                              itemCount: provider.hubAndSpokeOrders.length,
+                              itemBuilder: (context, index) {
+                                final currentItem =
+                                    provider.hubAndSpokeOrders[index];
+                                final createdAt = currentItem["created_at"];
+                                final formattedDate =
+                                    DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(createdAt),
+                                );
 
-                          return InkWell(
-                            onTap: () {
-                              context.push(
-                                "/updateOrderScreen/${currentItem["id"]}",
-                                extra: currentItem,
-                              );
-                            },
-                            child: DeliveryCard(
-                              orderLat: double.parse(
-                                  currentItem["to_latitude"]),
-                              orderLng: double.parse(
-                                  currentItem["to_longitude"]),
-                              orderId: currentItem["order_id"],
-                              status: currentItem["has_order_status"]
-                              ["name"],
-                              fromCity: currentItem["from_city"],
-                              toCity: currentItem["to_city"],
-                              date: formattedDate,
-                              goodsType: currentItem["pro_type"],
-                              organizationName:
-                              currentItem["organization_id"],
-                              deliveryType:
-                              currentItem["delivery_type"],
-                              weight:
-                              currentItem["weight"].toString(),
-                              price: currentItem["package_amt"]
-                                  .toDouble(),
-                              itemCost: currentItem["item_cost"],
+                                return InkWell(
+                                  onTap: () {
+                                    context.push(
+                                      "/updateOrderScreen/${currentItem["id"]}",
+                                      extra: currentItem,
+                                    );
+                                  },
+                                  child: DeliveryCard(
+                                    orderLat: double.parse(
+                                        currentItem["to_latitude"]),
+                                    orderLng: double.parse(
+                                        currentItem["to_longitude"]),
+                                    orderId: currentItem["order_id"],
+                                    status: currentItem["has_order_status"]
+                                        ["name"],
+                                    fromCity: currentItem["from_city"],
+                                    toCity: currentItem["to_city"],
+                                    date: formattedDate,
+                                    goodsType: currentItem["pro_type"],
+                                    organizationName:
+                                        currentItem["organization_id"],
+                                    deliveryType: currentItem["delivery_type"],
+                                    weight: currentItem["weight"].toString(),
+                                    price:
+                                        currentItem["package_amt"].toDouble(),
+                                    itemCost: currentItem["item_cost"],
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     );
                   },
                 ),
+
                 Consumer<DeliveryScreenProvider>(
                   builder: (context, provider, child) {
                     return RefreshIndicator(
@@ -138,50 +145,56 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                         await provider.fetchAllOrders();
                       },
                       child: provider.instantDeliveryOrders.isEmpty
-                          ? Center(child: Text(provider.orderStatus))
+                          ? SingleChildScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              child: SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                child: Center(
+                                  child: Text(provider.orderStatus),
+                                ),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: provider.instantDeliveryOrders.length,
-                        itemBuilder: (context, index) {
-                          final currentItem =
-                          provider.instantDeliveryOrders[index];
-                          final createdAt = currentItem["created_at"];
-                          final formattedDate =
-                          DateFormat('MMM d, yyyy').format(
-                            DateTime.parse(createdAt),
-                          );
+                              itemCount: provider.instantDeliveryOrders.length,
+                              itemBuilder: (context, index) {
+                                final currentItem =
+                                    provider.instantDeliveryOrders[index];
+                                final createdAt = currentItem["created_at"];
+                                final formattedDate =
+                                    DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(createdAt),
+                                );
 
-                          return InkWell(
-                            onTap: () {
-                              context.push(
-                                "/updateOrderScreen/${currentItem["id"]}",
-                                extra: currentItem,
-                              );
-                            },
-                            child: DeliveryCard(
-                              orderLat: double.parse(
-                                  currentItem["to_latitude"]),
-                              orderLng: double.parse(
-                                  currentItem["to_longitude"]),
-                              orderId: currentItem["order_id"],
-                              status: currentItem["has_order_status"]
-                              ["name"],
-                              fromCity: currentItem["from_city"],
-                              toCity: currentItem["to_city"],
-                              date: formattedDate,
-                              goodsType: currentItem["pro_type"],
-                              deliveryType:
-                              currentItem["delivery_type"],
-                              organizationName:
-                              currentItem["organization_id"],
-                              weight:
-                              currentItem["weight"].toString(),
-                              price: currentItem["package_amt"]
-                                  .toDouble(),
-                              itemCost: currentItem["item_cost"],
+                                return InkWell(
+                                  onTap: () {
+                                    context.push(
+                                      "/updateOrderScreen/${currentItem["id"]}",
+                                      extra: currentItem,
+                                    );
+                                  },
+                                  child: DeliveryCard(
+                                    orderLat: double.parse(
+                                        currentItem["to_latitude"]),
+                                    orderLng: double.parse(
+                                        currentItem["to_longitude"]),
+                                    orderId: currentItem["order_id"],
+                                    status: currentItem["has_order_status"]
+                                        ["name"],
+                                    fromCity: currentItem["from_city"],
+                                    toCity: currentItem["to_city"],
+                                    date: formattedDate,
+                                    goodsType: currentItem["pro_type"],
+                                    deliveryType: currentItem["delivery_type"],
+                                    organizationName:
+                                        currentItem["organization_id"],
+                                    weight: currentItem["weight"].toString(),
+                                    price:
+                                        currentItem["package_amt"].toDouble(),
+                                    itemCost: currentItem["item_cost"],
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     );
                   },
                 ),

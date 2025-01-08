@@ -94,7 +94,7 @@ void onStart(ServiceInstance service) async {
             body: params,
             // token: currentToken ?? "",
           );
-
+          print("Full Response: $responseData");
           bool isSuccess = responseData['success'];
           String message = responseData['message'];
 
@@ -106,7 +106,7 @@ void onStart(ServiceInstance service) async {
             print('Location updated successfully. $message');
           } else {
             print(
-                'FFailed to update location. Status code: ${responseData["success"]}');
+                'Failed to update location. Status code: ${responseData["success"]}');
           }
         } catch (e) {
           print('Error while updating location: $e');
@@ -146,7 +146,7 @@ void onStart(ServiceInstance service) async {
           print('Location updated successfully (iOS). $message');
         } else {}
       } catch (e) {
-        print('Error while updating location (iOS): $e');
+        //print('Error while updating location (iOS): $e');
       }
     });
   }
