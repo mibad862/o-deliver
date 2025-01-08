@@ -206,32 +206,6 @@ class DeliveryCard extends StatelessWidget {
   }
 
 
-  // Future<void> _openMapLauncher() async {
-  //   try {
-  //     // Fetch current location
-  //     Position position = await _getCurrentLocation();
-  //     double driverLat = position.latitude;
-  //     double driverLng = position.longitude;
-  //
-  //     // Convert the destination city (toCity) to coordinates
-  //     List<Location> locations = await locationFromAddress(toCity);
-  //     double destinationLat = locations.first.latitude;
-  //     double destinationLng = locations.first.longitude;
-  //
-  //     if (await MapLauncher.isMapAvailable(MapType.google) ?? false) {
-  //       await MapLauncher.showDirections(
-  //         mapType: MapType.google,
-  //         origin: Coords(driverLat, driverLng),
-  //         destination: Coords(destinationLat, destinationLng),
-  //         directionsMode: DirectionsMode.driving,
-  //       );
-  //     } else {
-  //       debugPrint("Google Maps is not available on this device.");
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error opening map: $e');
-  //   }
-  // }
 
 
   Future<void> _openMapLauncher() async {

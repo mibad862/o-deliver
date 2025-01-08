@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/api_handler/api_wrapper.dart';
 import 'package:o_deliver/shared_pref_helper.dart';
@@ -16,12 +17,6 @@ class VerifyOtpProvider extends ChangeNotifier {
 
   String? fcmToken = "";
 
-  bool _isContinueLoading = false;
-  bool get isContinueLoading => _isContinueLoading;
-
-  bool _ResendLoading = false;
-  bool get isResendLoading => _ResendLoading;
-
   String currentOTP = "";
 
   Future<void> getDeviceToken() async {
@@ -31,8 +26,9 @@ class VerifyOtpProvider extends ChangeNotifier {
 
 
   Future<void> resendOTP(String emailText, BuildContext context) async {
-    _ResendLoading = true;
-    notifyListeners();
+    EasyLoading.show(
+      status: "Resending OTP..."
+    );
 
     print(emailText);
     print(otpController.text);
@@ -73,14 +69,15 @@ class VerifyOtpProvider extends ChangeNotifier {
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
     } finally {
-      _ResendLoading = false;
-      notifyListeners();
+      EasyLoading.dismiss();
     }
   }
 
   Future<void> verifyOTP(String emailText, BuildContext context) async {
-    _isContinueLoading = true;
-    notifyListeners();
+
+    EasyLoading.show(
+      status: "Verifying OTP..."
+    );
 
     print(emailText);
     print(otpController.text);
@@ -112,14 +109,15 @@ class VerifyOtpProvider extends ChangeNotifier {
         final accessToken = responseData['accessToken'];
         final driverId = responseData['userData']['id'];
 
-        print("ACCESS TOKEN $accessToken");
-        print("DRIVER ID $driverId");
-
         await SharedPrefHelper.saveString("access-token", accessToken);
         await SharedPrefHelper.saveInt("driver-id", driverId);
 
+        print("ACCESS TOKEN $accessToken");
+        print("DRIVER ID $driverId");
+
         showCustomSnackBar(context, message);
         context.go('/mainScreen');
+        clearControllers();
       } else {
         // Handle error case
         showCustomSnackBar(context, message);
@@ -128,8 +126,11 @@ class VerifyOtpProvider extends ChangeNotifier {
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
     } finally {
-      _isContinueLoading = false;
-      notifyListeners();
+      EasyLoading.dismiss();
     }
+  }
+
+  void clearControllers(){
+    otpController.clear();
   }
 }

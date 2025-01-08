@@ -52,7 +52,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       style: TextStyle(fontSize: 16), // Adjust style as needed
                     ),
                     Pinput(
-                      obscureText: true,
+                      obscureText: false,
                       length: 6,
                       controller: otpProvider.otpController,
                       defaultPinTheme: defaultPinTheme,
@@ -64,9 +64,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    otpProvider.isResendLoading
-                        ? const CircularProgressIndicator()
-                        : CustomButton(
+                    CustomButton(
                             onTap: () {
                               otpProvider.resendOTP(widget.emailText, context);
                             },
@@ -74,11 +72,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                             sizeWidth: 80,
                           ),
                     const Spacer(),
-                    otpProvider.isContinueLoading
-                        ? const Align(
-                            alignment: Alignment.center,
-                            child: CircularProgressIndicator())
-                        : Padding(
+                    Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             child: CustomButton(
                               onTap: () {

@@ -15,7 +15,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
 
   bool? isSwitched = false;
 
-  String orderStatus = "";
+  String orderStatus = "No Order Found";
 
   List<dynamic> _hubAndSpokeOrders = [];
   List<dynamic> get hubAndSpokeOrders => _hubAndSpokeOrders;
@@ -73,14 +73,14 @@ class DeliveryScreenProvider extends ChangeNotifier {
         _hubAndSpokeOrders = responseData['orders']["HubAndSpoke"];
         _instantDeliveryOrders = responseData['orders']["InstantDelivery"];
 
-        orderStatus = message;
-
         print(_hubAndSpokeOrders);
+        print(_instantDeliveryOrders);
         print(message);
+
+        notifyListeners();
 
       } else {
         // Handle error case
-        orderStatus = message;
         print(message);
       }
     } catch (e) {

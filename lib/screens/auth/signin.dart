@@ -15,9 +15,6 @@ class SignIn extends StatefulWidget {
 }
 
 class SignInState extends State<SignIn> {
-
-  @override
-
   @override
   Widget build(BuildContext context) {
     final signInProvider = Provider.of<SignInProvider>(context);
@@ -33,10 +30,6 @@ class SignInState extends State<SignIn> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   appBar(),
-
-                  // Text("EMAIL : ${signInProvider.emailController.text}"),
-                  // Text("PASS ${signInProvider.passwordController.text}"),
-
                   //Email
                   CustomTextField(
                     controller: signInProvider.emailController,
@@ -86,7 +79,7 @@ class SignInState extends State<SignIn> {
                     },
                   ),
 
-                  //Rember me & Forgot password
+                  //Remember me & Forgot password
                   Row(
                     children: [
                       //CheckBox
@@ -119,27 +112,18 @@ class SignInState extends State<SignIn> {
                   const SizedBox(height: 20),
 
                   //Button
-                  signInProvider.isLoading
-                      ? const Align(
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.appThemeColor,
-                            ),
-                          ),
-                        )
-                      : CustomButton(
-                          onTap: () {
-                            if (signInProvider.formKey.currentState!
-                                .validate()) {
-                              signInProvider.signIn(context);
-                            }
-                          },
-                          buttonText: "Sign In",
-                          sizeWidth: double.infinity,
-                          borderRadius: 30,
-                          buttonColor: AppColors.appThemeColor,
-                        ),
+
+                  CustomButton(
+                    onTap: () {
+                      if (signInProvider.formKey.currentState!.validate()) {
+                        signInProvider.signIn(context);
+                      }
+                    },
+                    buttonText: "Sign In",
+                    sizeWidth: double.infinity,
+                    borderRadius: 30,
+                    buttonColor: AppColors.appThemeColor,
+                  ),
                   const SizedBox(height: 20),
 
                   const Row(

@@ -3,8 +3,10 @@ import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'api_handler/api_wrapper.dart';
 import 'api_handler/network_constant.dart';
+import 'providers/deliveryScreen_provider.dart';
 import 'shared_pref_helper.dart';
 
 class NotificationServices {
@@ -25,7 +27,7 @@ class NotificationServices {
     await _flutterLocalNotificationPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        handleNotificationAction(response, message);
+        handleNotificationAction(context,response, message);
       },
       // onDidReceiveNotificationResponse: (payload) {
       //   if (payload.actionId == 'accept') {
@@ -154,7 +156,7 @@ class NotificationServices {
     });
   }
 
-  Future<void> handleNotificationAction(
+  Future<void> handleNotificationAction(BuildContext context,
       NotificationResponse response, RemoteMessage message) async {
     final currentToken = await SharedPrefHelper.getString('access-token');
     final currentDriverId = await SharedPrefHelper.getInt('driver-id');
@@ -182,6 +184,11 @@ class NotificationServices {
       print(message);
 
       if (isSuccess) {
+
+        final deliveryScreenProvider =
+        Provider.of<DeliveryScreenProvider>(context, listen: false);
+        await deliveryScreenProvider.fetchAllOrders();
+
         print(message);
         // Handle success case
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/shared_pref_helper.dart';
 import '../api_handler/api_wrapper.dart'; // Ensure this is correct
@@ -18,9 +19,6 @@ class SignInProvider with ChangeNotifier {
 
   bool rememberMe = false;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
   bool passVisible = true;
   bool get passwordVisible => passVisible;
 
@@ -34,9 +32,6 @@ class SignInProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> saveRememberMe() async {
-  //   await SharedPrefHelper.saveBool("logged-in", rememberMe);
-  // }
 
   // Method to sign in the user
 
@@ -44,13 +39,8 @@ class SignInProvider with ChangeNotifier {
     if (rememberMe) {
       await SharedPrefHelper.saveString("savedEmail", emailController.text);
       await SharedPrefHelper.saveString("savedPassword", passwordController.text);
-
       rememberMe = false;
     }
-    // } else {
-    //   await SharedPrefHelper.removeKey("savedEmail");
-    //   await SharedPrefHelper.removeKey("savedPassword");
-    // }
   }
 
   Future<void> loadCredentials() async {
@@ -62,14 +52,13 @@ class SignInProvider with ChangeNotifier {
         await SharedPrefHelper.getString("savedPassword") ?? "";
 
     print("PASS ${passwordController.text}");
-    // rememberMe =
-    //     emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
     notifyListeners();
   }
 
   Future<void> signIn(BuildContext context) async {
-    _isLoading = true;
-    notifyListeners();
+    EasyLoading.show(
+      status: "Signing in..."
+    );
 
     final Map<String, dynamic> params = {
       "email": emailController.text.toString(),
@@ -89,10 +78,6 @@ class SignInProvider with ChangeNotifier {
       print(message);
 
       if (isSuccess) {
-        // if(rememberMe){
-        //   await saveRememberMe();
-        // }
-
         if (rememberMe) {
           await saveCredentials();
         }
@@ -113,8 +98,7 @@ class SignInProvider with ChangeNotifier {
       print("Error: $e");
       showCustomSnackBar(context, e.toString());
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      EasyLoading.dismiss();
     }
   }
 

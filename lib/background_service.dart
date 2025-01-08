@@ -1,101 +1,4 @@
-// import 'dart:async';
-// import 'dart:ui';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter_background_service/flutter_background_service.dart';
-// import 'package:geolocator/geolocator.dart';
-//
-// import 'location_service.dart';
-//
-// Future<void> initializeService() async {
-//   final service = FlutterBackgroundService();
-//   await service.configure(
-//       iosConfiguration: IosConfiguration(
-//           autoStart: true,
-//           onForeground: onStart,
-//           onBackground: onIosBackground
-//       ),
-//       androidConfiguration:
-//       AndroidConfiguration(
-//           onStart: onStart,
-//           isForegroundMode: true,
-//           autoStart: true,
-//           foregroundServiceTypes: [AndroidForegroundType.location]
-//       ));
-// }
-//
-// @pragma('vm:entry-point')
-// void onStart(ServiceInstance service) async {
-//   DartPluginRegistrant.ensureInitialized();
-//
-//   final locationService = LocationService();
-//
-//   // Start location updates
-//   locationService.startLocationUpdates(service);
-//
-//   if (service is AndroidServiceInstance) {
-//     service.on('setAsForeground').listen((event) {
-//       service.setAsForegroundService(); // Make sure to call this to start in foreground
-//     });
-//
-//     service.on('setAsBackground').listen((event) {
-//       service.setAsBackgroundService(); // Switch to background
-//     });
-//
-//     service.on('stopService').listen((event) {
-//       service.stopSelf(); // Stop the service
-//     });
-//
-//     Timer.periodic(Duration(seconds: 1), (timer) async {
-//       if (service is AndroidServiceInstance) {
-//         if (await service.isForegroundService()) {
-//           // Set foreground notification with updated location
-//           Position position = await locationService.getCurrentLocation();
-//           service.setForegroundNotificationInfo(
-//             title: 'Foreground Service Running',
-//             content: 'Lat: ${position.latitude}, Long: ${position.longitude}',
-//           );
-//         }
-//       }
-//       // Perform some operation in the background if needed
-//       print('Background service running');
-//       service.invoke('update');
-//     });
-//   }
-//   // iOS handling (generic)
-//   if (service is ServiceInstance) {
-//     // Here, we can also set notifications or background tasks in iOS
-//
-//     service.on('stopService').listen((event) {
-//       service.stopSelf(); // Stop the service
-//     });
-//
-//     Timer.periodic(Duration(seconds: 1), (timer) async {
-//       Position position = await locationService.getCurrentLocation();
-//       if (service is AndroidServiceInstance) {
-//         service.setForegroundNotificationInfo(
-//           title: 'Location in Foreground',
-//           content: 'Lat: ${position.latitude}, Long: ${position.longitude}',
-//         );
-//       }
-//
-//       print('Updated Location (iOS): Lat: ${position.latitude}, Long: ${position.longitude}');
-//       service.invoke('update');
-//     });
-//   }
-// }
-// // Handle background tasks for iOS
-// @pragma('vm:entry-point')
-// Future<bool> onIosBackground(ServiceInstance service) async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   DartPluginRegistrant.ensureInitialized();
-//   print("Background service running...");
-//
-//   // Start location updates in the background
-//   final locationService = LocationService();
-//   locationService.startLocationUpdates(service);
-//
-//   return true; // Ensures the background service keeps running
-// }
+
 
 import 'dart:async';
 import 'dart:ui';
@@ -120,7 +23,7 @@ Future<void> initializeService() async {
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
       isForegroundMode: true,
-      autoStart: true,
+      autoStart: false,
       foregroundServiceTypes: [AndroidForegroundType.location],
     ),
   );
