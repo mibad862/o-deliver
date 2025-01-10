@@ -40,31 +40,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-/*Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initializeService();
-
-  // Check connectivity
-  final connectivityResult = await Connectivity().checkConnectivity();
-
-  // Initialize Firebase if connected
-  if (connectivityResult.contains(ConnectivityResult.none)) {
-    print("No Internet Connection Available");
-  } else {
-    print('Internet is available, initializing Firebase...');
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    await requestPermissions();
-  }
-
-  runApp(MyApp(
-    initialRoute: connectivityResult.contains(ConnectivityResult.none)
-        ? '/noConnectionScreen'
-        : '/splash',
-  ));
-}*/
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeService();
@@ -81,23 +56,6 @@ Future<void> main() async {
         options: DefaultFirebaseOptions.currentPlatform);
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     await requestPermissions();
-
-    // Initialize Local Notifications
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-    const AndroidInitializationSettings androidInitializationSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings =
-    InitializationSettings(android: androidInitializationSettings);
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        print('Foreground action triggered');
-        // Handle foreground actions
-      },
-      onDidReceiveBackgroundNotificationResponse: handleNotificationActionBackground,
-    );
   }
 
   runApp(MyApp(
@@ -106,7 +64,6 @@ Future<void> main() async {
         : '/splash',
   ));
 }
-
 
 Future<void> requestPermissions() async {
   var status = await Permission.locationWhenInUse.status;
