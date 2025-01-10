@@ -9,13 +9,18 @@ import '../../background_service.dart';
 import '../../components/delivery_card.dart';
 
 class DeliveryScreen extends StatefulWidget {
-  const DeliveryScreen({super.key});
+  final int initialTabIndex;
+  const DeliveryScreen({super.key,this.initialTabIndex = 0});
+
 
   @override
   State<DeliveryScreen> createState() => _DeliveryScreenState();
 }
 
 class _DeliveryScreenState extends State<DeliveryScreen> {
+
+
+
   @override
   Widget build(BuildContext context) {
     print("Rebuilding Delivery Screen");
@@ -62,6 +67,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
         ),
         body: DefaultTabController(
           length: 2,
+          initialIndex: widget.initialTabIndex,
           child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,

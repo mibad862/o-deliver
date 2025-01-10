@@ -3,12 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:o_deliver/background_service.dart';
 import 'package:o_deliver/providers/multi_provider_setup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'notificatioManagerNew.dart';
 import 'screens/auth/signin.dart';
 import 'screens/auth/signup.dart';
 import 'screens/auth/verify_otp.dart';
@@ -24,13 +26,21 @@ import 'screens/splash_screen.dart';
 import 'screens/update_order_screen.dart';
 import 'widgets/notificaiton_service_manager.dart';
 
-@pragma("vm:entry-point")
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
+  print('Firebase initialized in background');
+  print('Background notification received: ${message.data}');
+  // Perform actions based on the notification type
+  String? notificationType = message.data['notificationType'];
+  if (notificationType == '1') {
+    NotificationManagerNew().showNotificationButton(message);
+  } else {
+    NotificationManagerNew().showNotification(message);
+  }
 }
 
-Future<void> main() async {
+/*Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeService();
 
@@ -53,7 +63,50 @@ Future<void> main() async {
         ? '/noConnectionScreen'
         : '/splash',
   ));
+}*/
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
+
+  // Check connectivity
+  final connectivityResult = await Connectivity().checkConnectivity();
+
+  // Initialize Firebase if connected
+  if (connectivityResult.contains(ConnectivityResult.none)) {
+    print("No Internet Connection Available");
+  } else {
+    print('Internet is available, initializing Firebase...');
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    await requestPermissions();
+
+    // Initialize Local Notifications
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings androidInitializationSettings =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: androidInitializationSettings);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        print('Foreground action triggered');
+        // Handle foreground actions
+      },
+      onDidReceiveBackgroundNotificationResponse: handleNotificationActionBackground,
+    );
+  }
+
+  runApp(MyApp(
+    initialRoute: connectivityResult.contains(ConnectivityResult.none)
+        ? '/noConnectionScreen'
+        : '/splash',
+  ));
 }
+
 
 Future<void> requestPermissions() async {
   var status = await Permission.locationWhenInUse.status;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:o_deliver/notificatioManagerNew.dart';
 import 'package:o_deliver/notification_services.dart';
 import 'package:o_deliver/screens/pickup/pickup_screen.dart';
 import 'package:o_deliver/screens/settings_screen.dart';
@@ -15,7 +16,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  NotificationServices notificationService = NotificationServices();
+ // NotificationServices notificationService = NotificationServices();
+  NotificationManagerNew notificationManagerNew = NotificationManagerNew();
   // LocationService locationService = LocationService();
 
   @override
@@ -24,8 +26,12 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
 
     // locationService.requestLocationPermission();
-    notificationService.getNotificationPermission();
-    notificationService.firebaseInit(context);
+   /* notificationService.getNotificationPermission();
+    notificationService.firebaseInit(context);*/
+    notificationManagerNew.requestNotificationPermission();
+    notificationManagerNew.firebaseInit(context);
+    notificationManagerNew.setupInteractMessage(context);
+    notificationManagerNew.foregroundMessage();
   }
 
   // Future<void> _requestPermissions() async {

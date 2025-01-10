@@ -66,6 +66,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
       bool isSuccess = responseData['success'];
       String message = responseData['message'];
       // String orders = responseData['orders'];
+      print('fetchAllOrders_message22222 ${responseData['message']}');
 
       if (isSuccess) {
         print("DRIVER ID $driverId");
@@ -74,8 +75,8 @@ class DeliveryScreenProvider extends ChangeNotifier {
         _instantDeliveryOrders = responseData['orders']["InstantDelivery"];
 
         print(_hubAndSpokeOrders);
-        print(_instantDeliveryOrders);
-        print(message);
+        print('_instantDeliveryOrders $_instantDeliveryOrders');
+        print('fetchAllOrders_message $message');
 
         notifyListeners();
 
