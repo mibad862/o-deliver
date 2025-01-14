@@ -10,6 +10,7 @@ import 'package:o_deliver/providers/multi_provider_setup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'helpers/easyloading_helper.dart';
 import 'notificatioManagerNew.dart';
 import 'screens/auth/signin.dart';
 import 'screens/auth/signup.dart';
@@ -63,6 +64,8 @@ Future<void> main() async {
         ? '/noConnectionScreen'
         : '/splash',
   ));
+
+
 }
 
 Future<void> requestPermissions() async {

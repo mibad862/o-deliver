@@ -12,32 +12,70 @@ import 'package:provider/provider.dart';
 import 'api_handler/api_wrapper.dart';
 import 'api_handler/network_constant.dart';
 
+@pragma('vm:entry-point')
+void handleNotificationActionBackground(NotificationResponse response) async {
+  print('Background action handler triggered');
+  print('Action ID: ${response.actionId}');
+
+  // Fetch stored data
+  final driverId = await SharedPrefHelper.getInt('driver-id');
+
+  // print("Current Order Id ${message.data["orderId"]}");
+
+  final params = {
+    "status": response.actionId,
+    "driver_id": driverId,
+    // "order_id": message.data["orderId"],
+  };
+
+  print("Params sent to confirmOrder in background: $params");
+
+  try {
+    final responseData = await ApiService.postApiWithToken(
+      endpoint: NetworkConstantsUtil.confirmOrder,
+      body: params,
+    );
+
+    bool isSuccess = responseData['success'];
+    String message = responseData['message'];
+    print('isSuccess: $isSuccess, Message: $message');
+
+    if (isSuccess) {
+      print("Order successfully updated in the background.");
+    } else {
+      print("Failed to update order in the background: $message");
+    }
+  } catch (e) {
+    print("Error in background action handler: $e");
+  }
+}
+
 class NotificationManagerNew {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   void initLocalNotification(
       RemoteMessage message, BuildContext context) async {
     debugPrint('initLocalNotification');
     const AndroidInitializationSettings androidInitializationSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings iosInitializationSettings =
-    DarwinInitializationSettings();
+        DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
-    InitializationSettings(
+        InitializationSettings(
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
 
-    await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // This handles actions when the app is in the foreground or running in the background.
-        print('Foreground/Running: Action received with ID: ${response.actionId}');
-        handleCallNotificationResponseForeground(context, response, message);
-      },
-      onDidReceiveBackgroundNotificationResponse: handleNotificationActionBackground,
-    );
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+      // This handles actions when the app is in the foreground or running in the background.
+      print(
+          'Foreground/Running: Action received with ID: ${response.actionId}');
+      handleCallNotificationResponseForeground(context, response, message);
+    },
+        onDidReceiveBackgroundNotificationResponse:
+            handleNotificationActionBackground);
   }
 
   void firebaseInit(BuildContext context) {
@@ -73,8 +111,6 @@ class NotificationManagerNew {
   }
 
 
-
-
   Future<void> getDeviceToken() async {
     await FirebaseMessaging.instance.getToken().then((fcmToken) {
       if (fcmToken != null) {
@@ -88,7 +124,7 @@ class NotificationManagerNew {
 
   Future<void> requestNotificationPermission() async {
     NotificationSettings settings =
-    await FirebaseMessaging.instance.requestPermission(
+        await FirebaseMessaging.instance.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -111,21 +147,24 @@ class NotificationManagerNew {
 
   /// Display a notification Button wali
   Future<void> showNotificationButton(
-      RemoteMessage data,
-      ) async {
+    RemoteMessage data,
+  ) async {
     debugPrint('showNotification with button');
 
     // Define action buttons for the notification
     var acceptAction = const AndroidNotificationAction(
-        'accepted', // ID of the action
-        'Accept', // Title of the action
-        showsUserInterface: true,
-        titleColor: Colors.green);
+      'accepted', // ID of the action
+      'Accept', // Title of the action
+      showsUserInterface: true,
+      titleColor: Colors.green,
+
+    );
     var declineAction = const AndroidNotificationAction(
-        'declined',
-        'Decline',
-        showsUserInterface: true,
-        titleColor: Colors.red);
+      'declined',
+      'Decline',
+      showsUserInterface: true,
+      titleColor: Colors.red,
+    );
 
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'default_channel',
@@ -133,6 +172,7 @@ class NotificationManagerNew {
       importance: Importance.high,
       priority: Priority.high,
       category: AndroidNotificationCategory.event,
+      icon: "@mipmap/ic_launcher",
       visibility: NotificationVisibility.public,
       actions: [acceptAction, declineAction], // Add actions here
     );
@@ -142,13 +182,26 @@ class NotificationManagerNew {
       iOS: const DarwinNotificationDetails(),
     );
 
+    print("Notification Details Added");
+
+    print("data.title ${data.data['title']}");
+    print("data.body ${data.data['body']}");
+
+    // try{
     await _flutterLocalNotificationsPlugin.show(
       0, // Notification ID
+      // "Hello",
+      // "Hey sexy",
       data.data['title'], // data.notification?.title,
       data.data['body'], // data.notification?.body,
       notificationDetails,
-      //   payload: payload,
+      // payload: payload,
     );
+    // }catch(e){
+    //   print("catch: ${e.toString()}");
+    // }
+
+    print("Show Notifications will show now");
   }
 
   /// Display a notification  without Button wali
@@ -163,7 +216,7 @@ class NotificationManagerNew {
     );
 
     AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       channel.id, channel.name.toString(),
       //channelDescription: 'your channel description',
       importance: Importance.max,
@@ -175,8 +228,8 @@ class NotificationManagerNew {
     );
 
     const DarwinNotificationDetails darwinNotificationDetails =
-    DarwinNotificationDetails(
-        presentAlert: true, presentBadge: true, presentSound: true);
+        DarwinNotificationDetails(
+            presentAlert: true, presentBadge: true, presentSound: true);
 
     NotificationDetails notificationDetails = NotificationDetails(
         android: androidNotificationDetails, iOS: darwinNotificationDetails);
@@ -201,7 +254,7 @@ class NotificationManagerNew {
     WidgetsFlutterBinding.ensureInitialized();
 
     RemoteMessage? initialMessage =
-    await FirebaseMessaging.instance.getInitialMessage();
+        await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       if (context.mounted) {
         // Navigate to the desired screen
@@ -221,6 +274,8 @@ class NotificationManagerNew {
 
   //IOS FOREGROUND
   Future<void> foregroundMessage() async {
+    debugPrint("FOREGROUND INITIALIZED");
+
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,
@@ -246,12 +301,8 @@ class NotificationManagerNew {
   //Api to handle actions response
   Future<void> handleNotificationAction(BuildContext context,
       NotificationResponse response, RemoteMessage message) async {
-    final currentToken = await SharedPrefHelper.getString('access-token');
     final currentDriverId = await SharedPrefHelper.getInt('driver-id');
 
-
-
-    print("ACCESS TOKEN $currentToken");
     print("DRIVER ID $currentDriverId");
     print("RESPONSE ACTION ${response.actionId}");
     print("ORDER ID ${message.data["orderId"]}");
@@ -276,15 +327,13 @@ class NotificationManagerNew {
       print('message $message');
 
       if (isSuccess) {
-
         final deliveryScreenProvider =
-        Provider.of<DeliveryScreenProvider>(context, listen: false);
+            Provider.of<DeliveryScreenProvider>(context, listen: false);
 
-        Future.delayed(Duration(seconds: 5),(){
+        Future.delayed(Duration(seconds: 3), () {
           deliveryScreenProvider.fetchAllOrders();
         });
-       // await deliveryScreenProvider.fetchAllOrders();
-
+        // await deliveryScreenProvider.fetchAllOrders();
 
         /*Navigator.push(
           context,
@@ -293,10 +342,8 @@ class NotificationManagerNew {
           ),
         );*/
         print(message);
-
       } else {
         print(message);
-
       }
     } catch (e) {
       print('ErrorMessage::::::::: $message');
@@ -308,9 +355,11 @@ class NotificationManagerNew {
     }
   }
 
-  handleCallNotificationResponseForeground(BuildContext context, NotificationResponse response, message) {
+
+  handleCallNotificationResponseForeground(
+      BuildContext context, NotificationResponse response, message) {
     print('handleCallNotificationResponseForegroundddddddd Called');
-    String? notificationType = message!.data['notificationType'] ;
+    String? notificationType = message!.data['notificationType'];
 
     print(' response.actionId ${response.actionId}');
     if (notificationType != null) {
@@ -324,15 +373,16 @@ class NotificationManagerNew {
 }
 
 // Background notification action handler
-@pragma('vm:entry-point')
-void handleNotificationActionBackground(NotificationResponse response) async {
-  print('Background action handler triggered');
-  print('Action ID: ${response.actionId}');
-  if (response.actionId == 'accepted') {
-    print('Order Accepted - Background');
-    // Add logic, such as an API call or state update.
-  } else if (response.actionId == 'declined') {
-    print('Order Rejected - Background');
-    // Add logic for reject action.
-  }
-}
+
+// @pragma('vm:entry-point')
+// void handleNotificationActionBackground(NotificationResponse response) async {
+//   print('Background action handler triggered');
+//   print('Action ID: ${response.actionId}');
+//   if (response.actionId == 'accepted') {
+//     print('Order Accepted - Background');
+//     // Add logic, such as an API call or state update.
+//   } else if (response.actionId == 'declined') {
+//     print('Order Rejected - Background');
+//     // Add logic for reject action.
+//   }
+// }

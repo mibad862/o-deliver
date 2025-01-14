@@ -98,9 +98,6 @@ void onStart(ServiceInstance service) async {
           bool isSuccess = responseData['success'];
           String message = responseData['message'];
 
-          print(message);
-          print(currentToken);
-          print(currentDriverId);
 
           if (isSuccess) {
             print('Location updated successfully. $message');
@@ -120,35 +117,35 @@ void onStart(ServiceInstance service) async {
       service.stopSelf();
     });
 
-    Timer.periodic(Duration(seconds: 10), (timer) async {
-      Position position = await locationService.getCurrentLocation();
-      print(
-          'Uppdated Location: Lat: ${position.latitude}, Long: ${position.longitude}');
-
-      final Map<String, dynamic> params = {
-        "lat": position.latitude,
-        "lng": position.longitude,
-      };
-
-      // Make the API call for iOS
-      try {
-        final responseData = await ApiService.postApiWithToken(
-          endpoint:
-              "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
-          body: params,
-          // token: currentToken ?? "",
-        );
-
-        bool isSuccess = responseData['success'];
-        String message = responseData['message'];
-
-        if (isSuccess) {
-          print('Location updated successfully (iOS). $message');
-        } else {}
-      } catch (e) {
-        //print('Error while updating location (iOS): $e');
-      }
-    });
+    // Timer.periodic(Duration(seconds: 10), (timer) async {
+    //   Position position = await locationService.getCurrentLocation();
+    //   print(
+    //       'Uppdated Location: Lat: ${position.latitude}, Long: ${position.longitude}');
+    //
+    //   final Map<String, dynamic> params = {
+    //     "lat": position.latitude,
+    //     "lng": position.longitude,
+    //   };
+    //
+    //   // Make the API call for iOS
+    //   try {
+    //     final responseData = await ApiService.postApiWithToken(
+    //       endpoint:
+    //           "${NetworkConstantsUtil.updateDriverLocation}/$currentDriverId",
+    //       body: params,
+    //       // token: currentToken ?? "",
+    //     );
+    //
+    //     bool isSuccess = responseData['success'];
+    //     String message = responseData['message'];
+    //
+    //     if (isSuccess) {
+    //       print('Location updated successfully (iOS). $message');
+    //     } else {}
+    //   } catch (e) {
+    //     //print('Error while updating location (iOS): $e');
+    //   }
+    // });
   }
 }
 

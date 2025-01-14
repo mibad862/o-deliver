@@ -45,20 +45,8 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     //   final service = FlutterBackgroundService();
                     //   service.invoke('stopService');
                     // }
-                    final service = FlutterBackgroundService();
 
-                    if (value) {
-                      // Start the background service only if not already running
-                      if (!(await service.isRunning())) {
-                        await service
-                            .startService(); // Explicitly start the service
-                      }
-                    } else {
-                      // Stop the background service
-                      service.invoke('stopService');
-                    }
-
-                    provider.updateDriverStatus(context);
+                    provider.updateDriverStatus(context, value);
                   },
                 );
               },

@@ -32,6 +32,8 @@ class _MainScreenState extends State<MainScreen> {
     notificationManagerNew.firebaseInit(context);
     notificationManagerNew.setupInteractMessage(context);
     notificationManagerNew.foregroundMessage();
+
+    print("ALL SERVICES HAS BEEN INITIALIZED");
   }
 
   // Future<void> _requestPermissions() async {

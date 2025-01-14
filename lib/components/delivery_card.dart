@@ -315,14 +315,14 @@ class DeliveryCard extends StatelessWidget {
             const SizedBox(height: 5),
             SizedBox(
               height: 30,
-              width: 130,
+              width: 140,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.appThemeColor
                 ),
                 onPressed: _openMapLauncher,
                 label: Text("Direction", style: TextStyle(color: Colors.white)),
-                icon: Icon(Icons.directions, color: Colors.white),
+                icon: Icon(Icons.directions, color: Colors.white, size: 15,),
               ),
             ),
             // CustomButton(

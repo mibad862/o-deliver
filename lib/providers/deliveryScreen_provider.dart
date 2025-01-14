@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:o_deliver/helpers/easyloading_helper.dart';
 import '../api_handler/api_wrapper.dart';
 import '../api_handler/network_constant.dart';
 import '../shared_pref_helper.dart';
@@ -18,12 +20,12 @@ class DeliveryScreenProvider extends ChangeNotifier {
   String orderStatus = "No Order Found";
 
   List<dynamic> _hubAndSpokeOrders = [];
+
   List<dynamic> get hubAndSpokeOrders => _hubAndSpokeOrders;
 
   List<dynamic> _instantDeliveryOrders = [];
+
   List<dynamic> get instantDeliveryOrders => _instantDeliveryOrders;
-
-
 
   void changeDriverStatus(bool value) {
     isSwitched = value;
@@ -35,10 +37,7 @@ class DeliveryScreenProvider extends ChangeNotifier {
     notifyListeners(); // Notify UI after fetching the value
   }
 
-
   Future<void> fetchAllOrders() async {
-    // _isLoading = true;
-    // notifyListeners();
 
     EasyLoading.show(status: "Loading...");
 
@@ -79,7 +78,6 @@ class DeliveryScreenProvider extends ChangeNotifier {
         print('fetchAllOrders_message $message');
 
         notifyListeners();
-
       } else {
         // Handle error case
         print(message);
@@ -96,14 +94,15 @@ class DeliveryScreenProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateDriverStatus(BuildContext context) async {
-    notifyListeners();
-
-    // Retrieve the Bearer token from shared preferences
-    String? accessToken = await SharedPrefHelper.getString('access-token');
+  Future<void> updateDriverStatus(
+    BuildContext context,
+    bool currentStatus,
+  ) async {
     int? driverId = await SharedPrefHelper.getInt('driver-id');
 
-    if (accessToken == null || driverId == null) {
+    final service = FlutterBackgroundService();
+
+    if (driverId == null) {
       print("Access token or driver ID is null");
       showCustomSnackBar(context, "Error: Missing authentication data");
       return;
@@ -132,81 +131,27 @@ class DeliveryScreenProvider extends ChangeNotifier {
 
       if (isSuccess) {
         print("STATUS $isSwitched");
-
         print("DRIVER ID $driverId");
 
-        // changeDriverStatus(true);
+        if (currentStatus) {
+          // Start the background service only if not already running
+          if (!(await service.isRunning())) {
+            await service.startService(); // Explicitly start the service
+          }
+        } else {
+          // Stop the background service
+          service.invoke('stopService');
+        }
 
-        showCustomSnackBar(context, message);
-        // context.go('/mainScreen');
+        EasyLoadingHelper.showSuccess(message);
       } else {
-        // changeDriverStatus(false);
-        // Handle error case
-        showCustomSnackBar(context, message);
+        EasyLoadingHelper.showError(message);
       }
     } catch (e) {
-      // changeDriverStatus(false);
+      EasyLoadingHelper.showError(e.toString());
       print("Error:mm $e");
-      showCustomSnackBar(context, e.toString());
     } finally {
       // changeDriverStatus(false);
-      notifyListeners();
-    }
-  }
-
-  Future<void> updateOrderStatus(BuildContext context) async {
-    notifyListeners();
-
-    // Retrieve the Bearer token from shared preferences
-    int? driverId = await SharedPrefHelper.getInt('driver-id');
-
-    if (driverId == null) {
-      print("Driver ID is null");
-      showCustomSnackBar(context, "Error: Missing authentication data");
-      return;
-    }
-
-    final Map<String, dynamic> params = {
-      "on_duty": isSwitched! ? 1 : 0,
-    };
-
-    try {
-      print('Sending request to update driver status...');
-
-      // Call the API with the Bearer token in the headers
-      final responseData = await ApiService.postApiWithToken(
-        endpoint:
-            "${NetworkConstantsUtil.updateDriverStatus}/$driverId", // API endpoint
-        body: params, // Request parameters
-        // token: accessToken,
-      );
-
-      bool isSuccess = responseData['success'];
-      String message = responseData['message'];
-
-      print(message);
-
-      if (isSuccess) {
-        print("STATUS $isSwitched");
-
-        print("DRIVER ID $driverId");
-
-        // changeDriverStatus(true);
-
-        showCustomSnackBar(context, message);
-        // context.go('/mainScreen');
-      } else {
-        // changeDriverStatus(false);
-        // Handle error case
-        showCustomSnackBar(context, message);
-      }
-    } catch (e) {
-      // changeDriverStatus(false);
-      print("Error: $e");
-      showCustomSnackBar(context, e.toString());
-    } finally {
-      // changeDriverStatus(false);
-      notifyListeners();
     }
   }
 }
